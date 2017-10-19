@@ -4,7 +4,7 @@
   "description": "Services in this project are part of a home automation project that I've started building on Github. It is incremental & features will be added very slowly being a side project",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node server.js"
   },
   "keywords": [
