@@ -7,7 +7,7 @@ The task is to control a floor lamp wirelessly using an Arduino Uno and an Andro
 ## The Solution
 To do this, consider the diagram below.
 
-![Circuit Diagram](https://github.com/dakshsrivastava/HomeAutomation/blob/master/images/Circuit_Diagram.png "Circuit Diagram")
+![](https://github.com/dakshsrivastava/HomeAutomation/blob/master/NodeServices/images/Circuit_Diagram.png)
 
 The floor lamp is connected to a socket for power and a switch is made using a 5v single relay. The switch is controlled by the Arduino Uno. The Arduino flips the relay on / off when a boolean `isLampSwitchedOn`'s value changes to `true`. It fetches the updated status of the `isLampSwitchedOn` boolean value from the node service `<custom domain>/api/getStatus/` running in Google Cloud App engine. To communicate with the webservice, the Arduino uses the ESP8266 wifi module & fetches the status every 2 seconds when activated. 
 
