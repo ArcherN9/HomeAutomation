@@ -1,2 +1,2 @@
 # HomeAutomation
-Services in this project are part of a home automation project that I've started building. It is incremental &amp; features will be added very slowly being a side project.
+**NodeServices** project serves as a component of a bigger undertaking, the HomeAutomation project. Head out to the Wiki to learn more.
