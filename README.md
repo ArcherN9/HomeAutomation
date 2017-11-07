@@ -4,4 +4,4 @@ The first step of any home automation project is to control a light bulb. Its no
 
 At current stage, this project gives the capability to a user to control a switch (not a wall switch). This repository gives you everything you need to program your Arduino, ESP8266 WiFi module, a node service & an Android App which can be setup on your local network or on the cloud. In turn, the ESP module & Android app will communicate with the node service to read or modify switch status. As for the Arduino, it reads the JSON response & controls the relay to act as a switch.
 
-#### Head out to the Wiki to get more info & how to assemble all components.
+#### Head out to the [Wiki](https://github.com/dakshsrivastava/HomeAutomation/wiki) for more info & how to assemble all components.
