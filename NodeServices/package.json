@@ -19,6 +19,7 @@
   "author": "Daksh Srivastava",
   "license": "ISC",
   "dependencies": {
+    "mongodb": "^2.2.33",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "forever": "^0.15.3"
