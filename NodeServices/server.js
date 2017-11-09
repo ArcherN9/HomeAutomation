@@ -84,9 +84,9 @@ router.get('/toggleSwitch', function(req, res) {
 				throw err;
 
 			//Console output
-     		console.log(new Date() + " : " + "Switch recorded in DB."
-     			+ " Old node status : " + !queryParams.status
-     			+ " New node status : " + queryParams.status);
+			console.log(new Date() + " : " + "Switch recorded in DB."
+				+ " Old node status : " + !queryParams.status
+				+ " New node status : " + queryParams.status);
 
      		//Log the output back to the user
      		res.json({ 
@@ -187,7 +187,11 @@ app.use('/api', router);
 // START THE SERVER
 // =============================================================================
 //app.listen(port);
-app.listen(8080, '0.0.0.0', function() {
+// app.listen(8080, '0.0.0.0, function() {
+//     //Show confirmation message on terminal that the API has been started
+//     console.log('Home Automation project API is running on port : ' + port);
+// });
+app.listen(8080, function() {
     //Show confirmation message on terminal that the API has been started
     console.log('Home Automation project API is running on port : ' + port);
 });
