@@ -63,40 +63,49 @@ router.get('/toggleSwitch', function(req, res) {
 	//Extract the query params
 	var queryParams = req.query;
 
-	//Console output
-	console.log(new Date() + " : " + "Switch toggle requested. Quering DB for updated values");
+	//Do not enter if Query params are missing
+	if(queryParams.nodeId !== null && queryParams.nodeId !== undefined
+		&& queryParams.status !== null && queryParams.status !== undefined) {
+		//Console output
+		console.log(new Date() + " : " + "Switch toggle requested. Quering DB for updated values");
 
-	//Query DB and get values for lamp switched on and whether arduino is updating or not
-	mongoDB.collection("status", function(err, collection) {
+		//Query DB and get values for lamp switched on and whether arduino is updating or not
+		mongoDB.collection("status", function(err, collection) {
 
-		//create a query for DB
-		var dbQuery = {
-			nodeId: ObjectID(queryParams.nodeId)
-		};
+			//create a query for DB
+			var dbQuery = {
+				nodeId: ObjectID(queryParams.nodeId)
+			};
 
-		//Values to be updated
-		var dbNewValue = {$set:{isNodeTurnedOn: (queryParams.status == 'true')}};
+			//Values to be updated
+			var dbNewValue = {$set:{isNodeTurnedOn: (queryParams.status == 'true')}};
 
-		collection.updateOne(dbQuery, dbNewValue, function(err, items) {
+			collection.updateOne(dbQuery, dbNewValue, function(err, items) {
 
-			//Throw error if update failed
-			if(err)
-				throw err;
+				//Throw error if update failed
+				if(err)
+					throw err;
 
-			//Console output
-			console.log(new Date() + " : " + "Switch recorded in DB."
-				+ " Old node status : " + (queryParams.status == 'true')
-				+ " New node status : " + queryParams.status);
+				//Console output
+				console.log(new Date() + " : " + "Switch recorded in DB."
+					+ " Old node status : " + (queryParams.status == 'true')
+					+ " New node status : " + queryParams.status);
 
-     		//Log the output back to the user
-     		res.json({ 
-     			message				: 'The switch has been toggled',
-     			isLampSwitchedOn	: queryParams.status,
-     			isArduinoUpdating	: queryParams.status,
-     			success				: true
-     		});
-     	});
-	});
+	     		//Log the output back to the user
+	     		res.json({ 
+	     			message				: 'The switch has been toggled',
+	     			isLampSwitchedOn	: queryParams.status,
+	     			isArduinoUpdating	: queryParams.status,
+	     			success				: true
+	     		});
+	     	});
+		});
+	} else 
+		//Log the output back to the user
+		res.json({
+			message				: 'Query params missing. Please retry.',
+			success				: false
+		});
 });
 
 // ============================================================================= //
@@ -110,39 +119,49 @@ router.get('/getStatus', function(req, res) {
 	//Extract the query params
 	var queryParams = req.query;
 
-	//Query DB and get values for lamp switched on and whether arduino is updating or not
-	mongoDB.collection("status", function(err, collection) {
+	//Do not enter if Query params are missing
+	if(queryParams.nodeId !== null && queryParams.nodeId !== undefined) {
 
-		//create a query for DB
-		var dbQuery = {
-			nodeId: ObjectID(queryParams.nodeId)
-		};
+		//Query DB and get values for lamp switched on and whether arduino is updating or not
+		mongoDB.collection("status", function(err, collection) {
 
-		collection.findOne(dbQuery, function(err, items) {
+			//create a query for DB
+			var dbQuery = {
+				nodeId: ObjectID(queryParams.nodeId)
+			};
 
-			//Throw error if update failed
-			if(err)
-				throw err;
-			else
-				console.log(new Date() + " : " + "Lamp status requested. Current Lamp status : " + JSON.stringify(items));
+			collection.findOne(dbQuery, function(err, items) {
 
-			//A message to be displayed back to the user
-			var strMessage = '';
+				//Throw error if update failed
+				if(err)
+					throw err;
+				else
+					console.log(new Date() + " : " + "Lamp status requested. Current Lamp status : " + JSON.stringify(items));
 
-			if(items.isNodeTurnedOn)
-				strMessage = "The lamp is currently switched on.";
-			else
-				strMessage = "The lamp is currently switched off."
+				//A message to be displayed back to the user
+				var strMessage = '';
 
-     		//Log the output back to the user
-     		res.json({
-     			message				: 'The switch has been toggled',
-     			isLampSwitchedOn	: items.isNodeTurnedOn,
-     			isArduinoUpdating	: true,
-     			success				: true
-     		});
-     	});
-	});
+				if(items !== null && items.isNodeTurnedOn)
+					strMessage = "The lamp is currently switched on.";
+				else
+					strMessage = "The lamp is currently switched off."
+
+	     		//Log the output back to the user
+	     		res.json({
+	     			message				: 'The switch has been toggled',
+	     			isLampSwitchedOn	: items.isNodeTurnedOn,
+	     			isArduinoUpdating	: true,
+	     			success				: true
+	     		});
+	     	});
+		});
+	} else {
+		//Log the output back to the user
+		res.json({
+			message				: 'Query params missing. Please retry.',
+			success				: false
+		});
+	}
 });
 
 // ============================================================================= //
