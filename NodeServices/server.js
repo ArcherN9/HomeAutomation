@@ -85,7 +85,7 @@ router.get('/toggleSwitch', function(req, res) {
 
 			//Console output
 			console.log(new Date() + " : " + "Switch recorded in DB."
-				+ " Old node status : " + !queryParams.status
+				+ " Old node status : " + (queryParams.status == 'true')
 				+ " New node status : " + queryParams.status);
 
      		//Log the output back to the user
