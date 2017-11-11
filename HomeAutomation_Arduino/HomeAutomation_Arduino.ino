@@ -20,10 +20,10 @@ void loop() {
     Serial.println(jsonString);
     if (root.containsKey("isLampSwitchedOn"))
       if (root["isLampSwitchedOn"]) {
-        digitalWrite(RELAY1, 1);
+        digitalWrite(RELAY1, 0);
         Serial.println("Relay On command was executed");
       } else {
-        digitalWrite(RELAY1, 0);
+        digitalWrite(RELAY1, 1);
         Serial.println("Relay off command was executed");
       }
   }
