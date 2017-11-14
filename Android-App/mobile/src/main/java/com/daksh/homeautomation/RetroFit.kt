@@ -30,7 +30,8 @@ class RetroFit private constructor(/* Empty private constructor in private to di
          */
         private var retrofitClient: Retrofit = Retrofit.Builder()
                 //For illustration, we've used the server address as CollinsDictionary
-                .baseUrl()
+//                .baseUrl("https://daksh-home-automation.appspot.com")
+                .baseUrl("http://192.168.0.6:8080/")
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
