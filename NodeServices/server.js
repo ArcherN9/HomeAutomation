@@ -53,8 +53,51 @@ router.get('/', function(req, res) {
 });
 
 // ============================================================================= //
+// 
+// The get all nodes API. It returns all nodes and their statuses to the caller
+router.get('/getAllNodes', function(req, res){
+	console.log("All nodes requested, Querying DB for all nodes");
 
-//Toggle swit
+	//Query the DB & get the collection which has all information w.r.t nodes
+	mongoDB.collection('nodes', function(err, collection){
+		
+		collection.aggregate([
+			{ $lookup: {
+				from: 'status',
+				localField: '_id',
+				foreignField: 'nodeId',
+				as: 'NodeDetails'
+			}}	
+			]).toArray(function(err, result){
+
+				//Throw error if it doesn't work
+				if(err) throw err;
+
+				//Extract isNodeTurnedOnStatus from this response
+				var nodeStatus = false;
+
+				// Check if nodeDetails was received
+				for(var index in result)
+					if(result[index].NodeDetails) {
+						for(var nodeIndex in result[index].NodeDetails) {
+							nodeStatus = result[index].NodeDetails[nodeIndex].isNodeTurnedOn;
+							//Add a new key isNodeTurnedOn to specify the node status
+							result[index]['isNodeTurnedOn'] = nodeStatus;
+						}
+
+						// Delete the NodeDetails from every result object
+						delete result[index].NodeDetails;
+					}
+
+				//Return the response to the caller
+				return res.json(result);
+			});
+		});
+});
+
+// ============================================================================= //
+
+//Toggle switch
 //Query Params : 
 //nodeId : xxxxxxx | The ID of the node that is being toggled
 //status  : true, fase | The new value of the node
@@ -67,7 +110,7 @@ router.get('/toggleSwitch', function(req, res) {
 	if(queryParams.nodeId !== null && queryParams.nodeId !== undefined
 		&& queryParams.status !== null && queryParams.status !== undefined) {
 		//Console output
-		console.log(new Date() + " : " + "Switch toggle requested. Quering DB for updated values");
+	console.log(new Date() + " : " + "Switch toggle requested. Quering DB for updated values");
 
 		//Query DB and get values for lamp switched on and whether arduino is updating or not
 		mongoDB.collection("status", function(err, collection) {
@@ -92,7 +135,8 @@ router.get('/toggleSwitch', function(req, res) {
 					+ " New node status : " + queryParams.status);
 
 	     		//Log the output back to the user
-	     		res.json({ 
+	     		res.json({
+	     			nodeId 				: queryParams.nodeId,
 	     			message				: 'The switch has been toggled',
 	     			isLampSwitchedOn	: queryParams.status,
 	     			isArduinoUpdating	: queryParams.status,
@@ -106,7 +150,7 @@ router.get('/toggleSwitch', function(req, res) {
 			message				: 'Query params missing. Please retry.',
 			success				: false
 		});
-});
+	});
 
 // ============================================================================= //
 
@@ -206,11 +250,11 @@ app.use('/api', router);
 // START THE SERVER
 // =============================================================================
 //app.listen(port);
-// app.listen(8080, '0.0.0.0, function() {
-//     //Show confirmation message on terminal that the API has been started
-//     console.log('Home Automation project API is running on port : ' + port);
+// app.listen(8080, '0.0.0.0', function() {
+    //Show confirmation message on terminal that the API has been started
+    // console.log('Home Automation project API is running on port : ' + port);
 // });
 app.listen(8080, function() {
-    //Show confirmation message on terminal that the API has been started
+    // Show confirmation message on terminal that the API has been started
     console.log('Home Automation project API is running on port : ' + port);
 });
