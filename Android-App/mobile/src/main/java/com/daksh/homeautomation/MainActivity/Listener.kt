@@ -1,11 +1,8 @@
 package com.daksh.homeautomation.MainActivity
 
-import com.daksh.homeautomation.MainActivity.Model.Model
 import com.daksh.homeautomation.MainActivity.Model.NodeModel
 
 interface Listener {
-
-    fun onReceived(body: Model?)
 
     fun onReceived(body: MutableList<NodeModel>)
 

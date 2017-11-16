@@ -1,7 +1,6 @@
 package com.daksh.homeautomation.MainActivity
 
 import android.support.v7.widget.RecyclerView
-import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

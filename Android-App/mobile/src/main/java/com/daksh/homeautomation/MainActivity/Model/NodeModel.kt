@@ -2,8 +2,13 @@ package com.daksh.homeautomation.MainActivity.Model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import io.objectbox.annotation.Entity
+import io.objectbox.annotation.Id
 
+@Entity(useNoArgConstructor = true)
 class NodeModel {
+
+    @Id var id: Long = 0
 
     @Expose
     @SerializedName("_id")
