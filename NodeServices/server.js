@@ -135,12 +135,16 @@ router.get('/toggleSwitch', function(req, res) {
 					+ " New node status : " + queryParams.status);
 
 	     		//Log the output back to the user
-	     		res.json({
-	     			nodeId 				: queryParams.nodeId,
-	     			message				: 'The switch has been toggled',
-	     			isLampSwitchedOn	: queryParams.status,
-	     			isArduinoUpdating	: queryParams.status,
-	     			success				: true
+	     		collection.findOne(dbQuery, function(err, items) {
+	     			if(err)
+	     				throw err;
+	     			
+	     			//Replace the _id value with value from nodeId and delete that key
+	     			items._id = items.nodeId;
+	     			//Delete the key now
+	     			delete items.nodeId;
+	     			//Return Response
+	     			res.json(items);
 	     		});
 	     	});
 		});
