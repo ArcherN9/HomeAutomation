@@ -19,10 +19,14 @@
   "author": "Daksh Srivastava",
   "license": "ISC",
   "dependencies": {
-    "mongodb": "^2.2.33",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
-    "forever": "^0.15.3"
+    "forever": "^0.15.3",
+    "moment": "^2.19.2",
+    "moment-timezone": "^0.5.14",
+    "mongodb": "^2.2.33",
+    "node-schedule": "^1.2.5",
+    "request": "^2.83.0"
   },
   "devDependencies": {
     "mongodb": "^2.2.33",

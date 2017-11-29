@@ -7,11 +7,16 @@
 var express    				= require('express');        // call express
 var app        				= express();                 // define our app using express
 var bodyParser 				= require('body-parser');
+var nodeSchedule			= require('node-schedule');
+var momentTimezone 			= require('moment-timezone');
+var moment 					= require('moment');
+var request 				= require('request');
 var mongoClient 			= require('mongodb').MongoClient;
 var ObjectID	 			= require('mongodb').ObjectID;
 
 // Include other JS files to implement abstraction
 var databaseConfigration 	= require('./databaseConf');
+var miscConfiguration		= require('./misc-conf');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -33,7 +38,7 @@ mongoClient.connect("mongodb://" + databaseConfigration.username + ":" + databas
    		console.log(credentials.username + ":" + credentials.password);
    		throw err;
    	} else
-   	console.log("Connection to mLab successful.");
+   	console.log(new Date() + ":" + "Connection to mLab successful.");
 
      //Assign varaible db to mongoDB global variable | This will be used throughout the app to communicate to DB
      mongoDB = db;
@@ -56,7 +61,7 @@ router.get('/', function(req, res) {
 // 
 // The get all nodes API. It returns all nodes and their statuses to the caller
 router.get('/getAllNodes', function(req, res){
-	console.log("All nodes requested, Querying DB for all nodes");
+	console.log(new Date() + ":" + "All nodes requested, Querying DB for all nodes");
 
 	//Query the DB & get the collection which has all information w.r.t nodes
 	mongoDB.collection('nodes', function(err, collection){
@@ -246,6 +251,80 @@ router.get('/getStatus', function(req, res) {
 // });
 
 // ============================================================================= //
+// 
+// Getting the time will return in local time (Depending on where the server resides, the time will be different - Most probably, UTC)
+// To fix that issue and schedule the sunSchedule according to IST, we need to convert the time to IST - To do that, we use Moment.js
+
+//Set timezone to Kolata
+moment().tz("Asia/kolkata").format();
+
+//Create a new date object with the time set to the desired API execution time
+var IST = new Date(moment.tz(new Date(), "Asia/Kolkata"));
+IST.setHours(04);
+IST.setMinutes(00);
+IST.setSeconds(0);
+IST.setMilliseconds(0);
+console.log(new Date() + ":" + "Sunrise and sunset timings will be requested by the system everyday at " + moment(IST).format('hh:mm A Z'));
+
+//Convert said IST time to UTC
+var UTCTime = moment.tz(IST, "Europe/London");
+console.log(new Date() + ":" + "Time has been set to UTC : " + moment(UTCTime).format('DD MMM YYYY hh:mm A Z'));
+
+// Setup a recurring rule to execute the following method everyday at 04:00 AM IST
+var recurrenceRule = new nodeSchedule.RecurrenceRule();
+recurrenceRule.dayOfWeek = [new nodeSchedule.Range(0, 6)];
+recurrenceRule.hour = moment(UTCTime).format('hh');
+recurrenceRule.minute = moment(UTCTime).format('mm');
+
+//Schedule the job and define the function to be executed every morning at 04:00 AM
+var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
+
+	//Create a new object of UTC time and convert to IST to find for which date is the data being requested
+	var todayUTC = new Date();
+	//convert
+	var todayIST = new Date(moment.tz(todayUTC, "Asia/Kolkata"));
+	
+	//Execute the GET API for sunset and sunrise timings for defined date
+	//lat (float): Latitude in decimal degrees. Required.
+	//lng (float): Longitude in decimal degrees. Required.
+	//date (string): Date in YYYY-MM-DD format.
+	request(miscConfiguration.host + miscConfiguration.param + "?"
+		+ "lat=" + miscConfiguration.latitude + "&"
+		+ "lng=" + miscConfiguration.longitude + "&"
+		+ "date=" + moment(todayIST).format('YYYY-MM-DD'), function(error, response, body){
+			//convert to JSON
+			var jsonResponse = JSON.parse(body);
+			//parse sunrise and sunset time and save to GMT
+			var todaySunrise = moment(moment.tz(moment.tz(jsonResponse.results.sunrise, "hh:mm:ss A", "Europe/London"), "Asia/Kolkata")).format('hh:mm A');
+			var todaySunset = moment(moment.tz(moment.tz(jsonResponse.results.sunset, "hh:mm:ss A", "Europe/London"), "Asia/Kolkata")).format('hh:mm A');
+
+			console.log(new Date() + ":" + miscConfiguration.host + " responded with sunrise and sunset values - sunrise : " + todaySunrise + " | sunset : " + todaySunset);
+
+			var daylight = {
+				Sunrise 	: todaySunrise,
+				sunset 		: todaySunset,
+				date 		: moment(todayIST).format('YYYY-MM-DD')
+			}
+
+			//Store value in DB
+			mongoDB.collection("daylight").insertOne(daylight, function(err, res){
+				
+				//Throw error if found
+				if(err) throw err;
+
+				//Log output to console
+				console.log(new Date() + ":" + "Data stored to DB : " + JSON.stringify(res.ops));
+
+				//Log next invocation
+				console.log(new Date() + ":" + sunSchedule.nextInvocation());
+			});
+		});
+});
+
+//Log next invocation
+console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
+
+// ============================================================================= //
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
@@ -253,12 +332,7 @@ app.use('/api', router);
 
 // START THE SERVER
 // =============================================================================
-//app.listen(port);
-// app.listen(8080, '0.0.0.0', function() {
-    //Show confirmation message on terminal that the API has been started
-    // console.log('Home Automation project API is running on port : ' + port);
-// });
-app.listen(8080, function() {
+app.listen(port, function() {
     // Show confirmation message on terminal that the API has been started
-    console.log('Home Automation project API is running on port : ' + port);
+    console.log(new Date() + ":" + 'Home Automation project API is running on port : ' + port);
 });
