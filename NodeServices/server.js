@@ -256,25 +256,25 @@ router.get('/getStatus', function(req, res) {
 // To fix that issue and schedule the sunSchedule according to IST, we need to convert the time to IST - To do that, we use Moment.js
 
 //Set timezone to Kolata
-moment().tz("Asia/kolkata").format();
+// moment().tz("Asia/kolkata").format();
 
 //Create a new date object with the time set to the desired API execution time
-var IST = new Date(moment.tz(new Date(), "Asia/Kolkata"));
-IST.setHours(04);
-IST.setMinutes(00);
-IST.setSeconds(0);
-IST.setMilliseconds(0);
+var IST = moment(new Date()).tz("Asia/Kolkata");
+IST.set('hour', 4);
+IST.set('minute', 0);
+IST.set('second', 0);
+IST.set('millisecond', 0);
 console.log(new Date() + ":" + "Sunrise and sunset timings will be requested by the system everyday at " + moment(IST).format('hh:mm A Z'));
 
 //Convert said IST time to UTC
-var UTCTime = moment.tz(IST, "Europe/London");
-console.log(new Date() + ":" + "Time has been set to UTC : " + moment(UTCTime).format('DD MMM YYYY hh:mm A Z'));
+var UTCTime = IST.tz("Europe/London");
+console.log(new Date() + ":" + "Relative time in UTC : " + moment(UTCTime).format('hh:mm A Z'));
 
 // Setup a recurring rule to execute the following method everyday at 04:00 AM IST
 var recurrenceRule = new nodeSchedule.RecurrenceRule();
 recurrenceRule.dayOfWeek = [new nodeSchedule.Range(0, 6)];
-recurrenceRule.hour = moment(UTCTime).format('hh');
-recurrenceRule.minute = moment(UTCTime).format('mm');
+recurrenceRule.hour = moment(UTCTime).format('k');
+recurrenceRule.minute = moment(UTCTime).format('m');
 
 //Schedule the job and define the function to be executed every morning at 04:00 AM
 var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
@@ -282,7 +282,7 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 	//Create a new object of UTC time and convert to IST to find for which date is the data being requested
 	var todayUTC = new Date();
 	//convert
-	var todayIST = new Date(moment.tz(todayUTC, "Asia/Kolkata"));
+	var todayIST = new Date(moment.tz(todayUTC, "Asia/Kolkata").format());
 	
 	//Execute the GET API for sunset and sunrise timings for defined date
 	//lat (float): Latitude in decimal degrees. Required.
@@ -295,8 +295,8 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 			//convert to JSON
 			var jsonResponse = JSON.parse(body);
 			//parse sunrise and sunset time and save to GMT
-			var todaySunrise = moment(moment.tz(moment.tz(jsonResponse.results.sunrise, "hh:mm:ss A", "Europe/London"), "Asia/Kolkata")).format('hh:mm A');
-			var todaySunset = moment(moment.tz(moment.tz(jsonResponse.results.sunset, "hh:mm:ss A", "Europe/London"), "Asia/Kolkata")).format('hh:mm A');
+			var todaySunrise = moment(moment.tz(moment.tz(jsonResponse.results.sunrise, "hh:mm:ss A", "Europe/London").format(), "Asia/Kolkata").format()).format('hh:mm A');
+			var todaySunset = moment(moment.tz(moment.tz(jsonResponse.results.sunset, "hh:mm:ss A", "Europe/London").format(), "Asia/Kolkata").format()).format('hh:mm A');
 
 			console.log(new Date() + ":" + miscConfiguration.host + " responded with sunrise and sunset values - sunrise : " + todaySunrise + " | sunset : " + todaySunset);
 
