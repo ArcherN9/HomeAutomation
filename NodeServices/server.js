@@ -280,9 +280,9 @@ recurrenceRule.minute = moment(UTCTime).format('m');
 var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 
 	//Create a new object of UTC time and convert to IST to find for which date is the data being requested
-	var todayUTC = new Date();
+	var todayUTC = moment(new Date()).tz("Europe/London");
 	//convert
-	var todayIST = new Date(moment.tz(todayUTC, "Asia/Kolkata").format());
+	var todayIST = todayUTC.tz("Asia/Kolkata");
 	
 	//Execute the GET API for sunset and sunrise timings for defined date
 	//lat (float): Latitude in decimal degrees. Required.
@@ -295,8 +295,8 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 			//convert to JSON
 			var jsonResponse = JSON.parse(body);
 			//parse sunrise and sunset time and save to GMT
-			var todaySunrise = moment(moment.tz(moment.tz(jsonResponse.results.sunrise, "hh:mm:ss A", "Europe/London").format(), "Asia/Kolkata").format()).format('hh:mm A');
-			var todaySunset = moment(moment.tz(moment.tz(jsonResponse.results.sunset, "hh:mm:ss A", "Europe/London").format(), "Asia/Kolkata").format()).format('hh:mm A');
+			var todaySunrise = moment(moment.tz(jsonResponse.results.sunrise, "hh:mm:ss A", "Europe/London").tz("Asia/Kolkata")).format('hh:mm A');
+			var todaySunset = moment(moment.tz(jsonResponse.results.sunset, "hh:mm:ss A", "Europe/London").tz("Asia/Kolkata")).format('hh:mm A');
 
 			console.log(new Date() + ":" + miscConfiguration.host + " responded with sunrise and sunset values - sunrise : " + todaySunrise + " | sunset : " + todaySunset);
 
@@ -316,7 +316,7 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 				console.log(new Date() + ":" + "Data stored to DB : " + JSON.stringify(res.ops));
 
 				//Log next invocation
-				console.log(new Date() + ":" + sunSchedule.nextInvocation());
+				console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
 			});
 		});
 });
