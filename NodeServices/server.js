@@ -10,6 +10,7 @@ var bodyParser 				= require('body-parser');
 var nodeSchedule			= require('node-schedule');
 var momentTimezone 			= require('moment-timezone');
 var moment 					= require('moment');
+var firebaseAdmin 			= require("firebase-admin");
 var request 				= require('request');
 var mongoClient 			= require('mongodb').MongoClient;
 var ObjectID	 			= require('mongodb').ObjectID;
@@ -17,16 +18,23 @@ var ObjectID	 			= require('mongodb').ObjectID;
 // Include other JS files to implement abstraction
 var databaseConfigration 	= require('./databaseConf');
 var miscConfiguration		= require('./misc-conf');
+var serviceAccount 			= require('./serviceAccountKey.json');
 
+//Declare variables that will be used throughout the application
+var mongoDB;		//define variable DB that will be used throughout the application to communicate to the Database
+
+// Start up configurations
 // configure app to use bodyParser()
 // this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
+var urlencodedParser = bodyParser.urlencoded({ extended: true });
+app.use(urlencodedParser);
 app.use(bodyParser.json());
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount),
+  databaseURL: "https://daksh-home-automation.firebaseio.com"
+});
 
 var port = process.env.PORT || 8080;        // set our port
-
-//define variable DB that will be used throughout the application to communicate to the Database
-var mongoDB;
 
 // Make connection to the Database
 // =============================================================================
@@ -326,13 +334,55 @@ console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings
 
 // ============================================================================= //
 
+//An API to register the FCM token with the server. Whenever a fresh token is retrieved from the library, 
+//This api will be called to reigster and transfer the token to the MongoDB. This will path way for authentication
+//in the future
+//Params : 
+//fcmid : String | The ID against which push notifications will be sent to the user
+//name 	: String | The name of the device
+//uid 	: String | The Secure ID of the device. This will help in the future to store refreshed tokens
+router.post('/registerDevice', urlencodedParser, function(req, response) {
+
+	//Extract the body params passed and conver it into a JSON
+	var jsonResponse = req.body;
+
+	var user = {
+		//Extract the FCM ID passed by the user
+		fcmid 			: jsonResponse.fcmid,
+
+		//Extract the Device Name
+		deviceName		: jsonResponse.name,
+
+		//Extract the device unique ID
+		uid 			: jsonResponse.uid,
+
+		//Date of storage
+		date 			: new Date()
+	};
+
+	//Open DB and store the FCM ID
+	mongoDB.collection("users").insertOne(user, function(err, res){
+				//Throw error if found
+				if(err) throw err;
+
+				//Log output to console
+				console.log(new Date() + ":" + "Data stored to DB : " + JSON.stringify(res.ops));
+
+				response.json({
+					message : 'Device registered Successfully',
+					success : true
+				});
+			});
+});
+
+
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
 
 // START THE SERVER
 // =============================================================================
-app.listen(port, function() {
+app.listen(port, '0.0.0.0', function() {
     // Show confirmation message on terminal that the API has been started
     console.log(new Date() + ":" + 'Home Automation project API is running on port : ' + port);
 });
