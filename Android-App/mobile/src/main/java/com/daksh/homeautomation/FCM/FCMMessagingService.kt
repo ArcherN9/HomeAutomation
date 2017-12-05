@@ -1,4 +1,4 @@
-package com.daksh.homeautomation
+package com.daksh.homeautomation.FCM
 
 import com.google.firebase.messaging.FirebaseMessagingService
 

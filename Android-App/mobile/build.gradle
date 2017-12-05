@@ -32,8 +32,9 @@ dependencies {
 
     //Android dependencies
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.google.android.gms:play-services-wearable:+'
+    implementation 'com.google.android.gms:play-services-wearable:11.6.2'
     implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.google.firebase:firebase-messaging:11.6.2'
 
     //Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -50,3 +51,5 @@ dependencies {
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
     kapt "io.objectbox:objectbox-processor:$objectboxVersion"
 }
+
+apply plugin: 'com.google.gms.google-services'

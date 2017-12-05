@@ -1,5 +1,19 @@
 package com.daksh.homeautomation.FCM.Model
 
-/**
- * Created by daksh_s on 01/12/17.
- */
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+
+class FCMModel {
+
+    @Expose
+    @SerializedName("message")
+    var strMessage: String? = null
+
+    @Expose
+    @SerializedName("success")
+    var isSuccess: Boolean? = false
+
+    override fun toString(): String {
+        return "Data received from server : $strMessage"
+    }
+}

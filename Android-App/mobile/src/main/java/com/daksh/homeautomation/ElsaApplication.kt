@@ -1,6 +1,7 @@
 package com.daksh.homeautomation
 
 import android.app.Application
+import android.content.Context
 import com.daksh.homeautomation.MainActivity.Model.MyObjectBox
 import io.objectbox.BoxStore
 import io.objectbox.DebugFlags
