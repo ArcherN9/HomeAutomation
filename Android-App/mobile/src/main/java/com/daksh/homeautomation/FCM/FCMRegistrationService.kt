@@ -1,7 +1,13 @@
 package com.daksh.homeautomation.FCM
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.provider.Settings
+import android.support.annotation.RequiresApi
 import android.util.Log
 import com.daksh.homeautomation.FCM.Model.FCMModel
 import com.daksh.homeautomation.RetroFit
@@ -15,7 +21,6 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 class FCMRegistrationService: FirebaseInstanceIdService(), Callback<FCMModel> {
-
 
     override fun onTokenRefresh() {
         super.onTokenRefresh()
@@ -31,6 +36,38 @@ class FCMRegistrationService: FirebaseInstanceIdService(), Callback<FCMModel> {
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
         sendRegistrationToServer(refreshedToken)
+
+        //Notification channels are registered for devices running on API 26 and above.
+        //Without this, the user has very little control over what notifications he wishes to see
+        //and what not
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            registerNotificationChannel()
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun registerNotificationChannel() {
+        //Register a notification channel now | This is done here because we don't want to
+        //execute the creation of notification channel everytime the app is used
+        val mNotificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // The id of the channel.
+        val id: String = application.packageName + ".USER_ACTION"
+        // The user-visible name of the channel.
+        val strName: CharSequence = "User Action Channel"
+        // The user-visible description of the channel.
+        val strDescription: String = "All notifications which require user action to perform the " +
+                "very purpose of the application are posted on this channel. If permissions are taken away, " +
+                "the application might have unintended behavior."
+        val mChannel = NotificationChannel(id, strName, NotificationManager.IMPORTANCE_HIGH)
+        // Configure the notification channel.
+        mChannel.description = strDescription
+        mChannel.enableLights(true)
+        // Sets the notification light color for notifications posted to this
+        // channel, if the device supports this feature.
+        mChannel.lightColor = Color.RED
+        mChannel.enableVibration(true)
+//        mChannel.vibrationPattern = new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400}
+        mNotificationManager.createNotificationChannel(mChannel)
     }
 
     @SuppressLint("HardwareIds")
