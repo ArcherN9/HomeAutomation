@@ -31,7 +31,7 @@ app.use(urlencodedParser);
 app.use(bodyParser.json());
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
-  databaseURL: "https://daksh-home-automation.firebaseio.com"
+  databaseURL: databaseConfigration.firebase
 });
 
 var port = process.env.PORT || 8080;        // set our port
@@ -39,11 +39,11 @@ var port = process.env.PORT || 8080;        // set our port
 // Make connection to the Database
 // =============================================================================
 // Connect to the db
-mongoClient.connect("mongodb://" + databaseConfigration.username + ":" + databaseConfigration.password 
-	+ "@" + databaseConfigration.databaseUrl + ":" + databaseConfigration.port + "/" + databaseConfigration.name, function (err, db) {
+mongoClient.connect("mongodb://" + databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password 
+	+ "@" + databaseConfigration.mongoDB.databaseUrl + ":" + databaseConfigration.mongoDB.port + "/" + databaseConfigration.mongoDB.name, function (err, db) {
    	//Catch exceptions
    	if(err) {
-   		console.log(credentials.username + ":" + credentials.password);
+   		console.log(databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password);
    		throw err;
    	} else
    	console.log(new Date() + ":" + "Connection to mLab successful.");
@@ -263,9 +263,6 @@ router.get('/getStatus', function(req, res) {
 // Getting the time will return in local time (Depending on where the server resides, the time will be different - Most probably, UTC)
 // To fix that issue and schedule the sunSchedule according to IST, we need to convert the time to IST - To do that, we use Moment.js
 
-//Set timezone to Kolata
-// moment().tz("Asia/kolkata").format();
-
 //Create a new date object with the time set to the desired API execution time
 var IST = moment(new Date()).tz("Asia/Kolkata");
 IST.set('hour', 4);
@@ -374,6 +371,38 @@ router.post('/registerDevice', urlencodedParser, function(req, response) {
 				});
 			});
 });
+
+// ============================================================================= //
+// Setup a testing POST service to send testing push notification messages
+// Params :
+// fcmregistrationtoken : The FCM ID where the push notification is to be sent
+// payload : The message to send
+router.post('/sendNotification', urlencodedParser, function(req, res){
+
+	//Extract the body params passed and conver it into a JSON
+	var jsonResponse = req.body;
+	console.log(new Date() + ":" + "Sending a dummy notification with payload : " + JSON.stringify(jsonResponse));
+
+	// Send a message to the device corresponding to the provided registration token.
+	firebaseAdmin.messaging().sendToDevice(jsonResponse.fcmregistrationtoken, jsonResponse.payload).then(function(response) {
+	    // See the MessagingDevicesResponse reference documentation for
+	    // the contents of response.
+	    res.json({
+	    	message 	: "Successfully sent message",
+	    	receiver 	: jsonResponse.fcmregistrationtoken, 
+	    	payload 	: jsonResponse.payload
+	    });
+	})
+	.catch(function(error) {
+		res.json({
+	    	message 	: "Message failed",
+	    	error 		: error
+	    });
+	});
+});
+
+
+// ============================================================================= //
 
 
 // REGISTER OUR ROUTES -------------------------------
