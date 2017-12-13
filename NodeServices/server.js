@@ -12,6 +12,7 @@ var momentTimezone 			= require('moment-timezone');
 var moment 					= require('moment');
 var firebaseAdmin 			= require("firebase-admin");
 var request 				= require('request');
+const DialogflowApp 		= require('actions-on-google').DialogflowApp;
 var mongoClient 			= require('mongodb').MongoClient;
 var ObjectID	 			= require('mongodb').ObjectID;
 
@@ -22,6 +23,15 @@ var serviceAccount 			= require('./serviceAccountKey.json');
 
 //Declare variables that will be used throughout the application
 var mongoDB;		//define variable DB that will be used throughout the application to communicate to the Database
+const TURNOFF_INTENT		= 'light.Off';
+const TURNON_INTENT			= 'light.On';
+const LIST_ALL				= 'light.list.all';
+const LIGHT_NAME			= 'light.name';
+const USER_HELP			 	= 'user.help';
+
+//Declare the Contexts that are passed between services
+var TURNOFF_CONTEXT			= 'TurnOff';
+var TURNON_CONTEXT			= 'TurnOn';
 
 // Start up configurations
 // configure app to use bodyParser()
@@ -403,7 +413,298 @@ router.post('/sendNotification', urlencodedParser, function(req, res){
 
 
 // ============================================================================= //
+//
+// Setup a service to accept voice commands from the user | This API is never called directly
+// Is always called from DialogFlow as a webhook to a user query posted and identified to be from
+// Elsa application.
+// 
+// Sample body of data that will always be pushed to the service is available at : https://dialogflow.com/docs/fulfillment#webhook-example
+// 
+// Service response : In order to process the user command, dialogFlow needs certain response from the API to be able to serve the user
+// properly. For that, the response needs to be of the following format :
+// 1. speech			- 	String 	-	Response to the request.
+// 2. displayText		-	string 	- 	Text displayed on the user device screen.
+// 3. data 				-  	Object 	- 	Additional data required for performing the action on the client side. The data is sent to the client in the original form and is not processed by Dialogflow.
+// 4. contextOut 		-	Array of context objects	- Array of context objects set after intent completion. Example: "contextOut": [{"name":"weather", "lifespan":2, "parameters":{"city":"Rome"}}]
+// 5. source			-  	string 	-  	Data source.
+// 6. followupEvent		- 	Object 	- 	Event name and optional parameters sent from the web service to Dialogflow.
+router.post('/voiceAction', urlencodedParser, function(req, res){
+	//Log the invocation
+	console.log(new Date() + ":" + "voiceAction API called with data");
 
+	//Create an instance of DialogFlow that will process the params received
+	const dialogFlowApp = new DialogflowApp({request: req, response: res});
+
+	//Create a new actions map to map intents to functions
+	var actionMap = new Map();
+	actionMap.set(TURNOFF_INTENT, lightsOff);
+	actionMap.set(TURNON_INTENT, lightsOn);
+	actionMap.set(LIST_ALL, listAll);
+	actionMap.set(LIGHT_NAME, lightName);
+	actionMap.set(USER_HELP, userHelp);
+
+	//tell which function to trigger based on which intent
+	dialogFlowApp.handleRequest(actionMap);
+});
+
+/**
+ * Lights off method is executed when the Action is Light.Off. It is used to switch off a controllable node
+ * and set the status on the DB to false.
+ * @param  {[type]} assistant [description]
+ * @return {[type]}           [description]
+ *
+ * Examples of JSON that will be received : 
+ * 1. When turn off command is provided, but not the ID/Name : https://api.myjson.com/bins/o85yz
+ */
+ function lightsOff(assistant) {
+	// Connect to the DB and the Nodes Collection
+	mongoDB.collection("nodes", function(err, collection){
+		collection.find({}).toArray(function(err, result){
+
+				//throw the error if found
+				if (err) throw err;
+
+				//based on whether we have more than a single item on the list or not, we can either control the item directly,
+				//or prompt the user for more information
+				if(result.length == 1) {
+
+					//Query DB and get values for lamp switched on and whether arduino is updating or not
+					mongoDB.collection("status", function(err, collection) {
+						//create a query for DB
+						var dbQuery = {
+							nodeId: ObjectID(result[result.length - 1]._id)
+						};
+
+						//Values to be updated
+						var dbNewValue = {$set:{isNodeTurnedOn: false}};
+
+						collection.updateOne(dbQuery, dbNewValue, function(err, items) {
+
+							//Throw error if update failed
+							if(err)
+								throw err;
+
+							//Console output
+							console.log(new Date() + " : " + "Switch recorded in DB." + " New node status : " + false);
+						});
+
+					//There is nothing to prompt the user. There's just one item that can be controlled. Directly control it
+					//and leave
+					var speechText = "Okay!";
+					//return response from DB 
+					assistant.tell(speechText);
+				}); 
+				// else {
+				// 	//Only one item may be controlled, repond appropriately
+				// 	var speechText = "You may control the " + result[0].Description + " only.";
+
+				// 	//ask the user
+				// 	assistant.ask(speechText);
+				// }
+			} else {
+				var parameters = {
+					data: result
+				};
+				//There are more nodes in the list that can be controlled. Ask the user which one
+				assistant.setContext(TURNOFF_CONTEXT, 5, parameters);
+				assistant.ask("Which one?", ["Well?", "I think you just got occupied with something else", "We'll do this later!"]);
+			}
+		});
+	});
+}
+
+/**
+ * [lightsOn description]
+ * @param  {[type]} assistant [description]
+ * @return {[type]}           [description]
+ */
+function lightsOn(assistant) {
+	// Connect to the DB and the Nodes Collection
+	mongoDB.collection("nodes", function(err, collection){
+		collection.find({}).toArray(function(err, result){
+
+				//throw the error if found
+				if (err) throw err;
+
+				//based on whether we have more than a single item on the list or not, we can either control the item directly,
+				//or prompt the user for more information
+				if(result.length == 1) {
+
+					//Query DB and get values for lamp switched on and whether arduino is updating or not
+					mongoDB.collection("status", function(err, collection) {
+						//create a query for DB
+						var dbQuery = {
+							nodeId: ObjectID(result[result.length - 1]._id)
+						};
+
+						//Values to be updated
+						var dbNewValue = {$set:{isNodeTurnedOn: true}};
+
+						collection.updateOne(dbQuery, dbNewValue, function(err, items) {
+
+							//Throw error if update failed
+							if(err)
+								throw err;
+
+							//Console output
+							console.log(new Date() + " : " + "Switch recorded in DB." + " New node status : " + true);
+						});
+
+					//There is nothing to prompt the user. There's just one item that can be controlled. Directly control it
+					//and leave
+					var speechText = "Okay!";
+					//return response from DB 
+					assistant.tell(speechText);
+				}); 
+				// else {
+				// 	//Only one item may be controlled, repond appropriately
+				// 	var speechText = "You may control the " + result[0].Description + " only.";
+
+				// 	//ask the user
+				// 	assistant.ask(speechText);
+				// }
+			} else {
+				var parameters = {
+					data: result
+				};
+				//There are more nodes in the list that can be controlled. Ask the user which one
+				assistant.setContext(TURNON_CONTEXT, 5, parameters);
+				assistant.ask("Which one?", ["Well?", "I think you just got occupied with something else", "We'll do this later!"]);
+			}
+		});
+	});
+};
+
+/**
+ * [lightName description]
+ * @param  {[type]} assistant [description]
+ * @return {[type]}           [description]
+ * Example of JSON that will be received by the service :
+ * 1. If invoked contextually (Choose a node name on which to perform an action ): https://api.myjson.com/bins/t6ihv
+ */
+function lightName(assistant) {
+	//Context will be received if the name was received after some commands
+	const idClicked = assistant.getContextArgument('actions_intent_option', 'OPTION').value;
+	var incomingContext = (assistant.getContext(TURNOFF_CONTEXT.toLowerCase()) !== undefined 
+			? assistant.getContext(TURNOFF_CONTEXT.toLowerCase())
+			: assistant.getContext(TURNON_CONTEXT.toLowerCase()));
+	if(idClicked != undefined && incomingContext != undefined) {
+
+		//Query DB and get values for lamp switched on and whether arduino is updating or not
+		mongoDB.collection("status", function(err, collection) {
+		//create a query for DB
+			var dbQuery = {
+				nodeId: ObjectID(idClicked)
+			};
+
+			//Values to be updated
+			var dbNewValue = {$set:{isNodeTurnedOn: (incomingContext.name != TURNOFF_CONTEXT.toLowerCase())}};
+
+			collection.updateOne(dbQuery, dbNewValue, function(err, items) {
+
+				//Throw error if update failed
+				if(err)
+					throw err;
+
+				//Console output
+				console.log(new Date() + " : " + "Switch recorded in DB." + " New node status : " + incomingContext.name != TURNOFF_CONTEXT.toLowerCase());
+			});
+		});
+		//There is nothing to prompt the user. The user has told the node that is to be controlled. Directly control it
+		//and leave
+		var speechText = "Okay!";
+		//return response from DB 
+		assistant.tell(speechText);
+	}
+}
+
+/**
+ * [userHelp description]
+ * @param  {[type]} assistant [description]
+ * @return {[type]}           [description]
+ */
+function userHelp(assistant) {
+	assistant.tell("I'm not ready to answer your questions yet. Later, perhaps!");
+}
+
+/**
+ * The method will be exeucted when the user wants to retrieve a list of all nodes that s/he can control
+ * @param  {[type]} assistant [description]
+ * @return {[type]}           [description]
+ * Example of JSON that will be received by the service : 
+ * 1. When invoked contextually (What are my options after another command) :  https://api.myjson.com/bins/d5qlv
+ */
+ function listAll(assistant) {
+
+ 	//Context will be received only on this case | Because if the user asked to turn on or off something, 
+ 	//and there was only one item, the flow would have ended on the previous command.
+	//We check for any incoming contexts now
+	var incomingContext = (assistant.getContext(TURNOFF_CONTEXT.toLowerCase()) !== null 
+			? assistant.getContext(TURNOFF_CONTEXT.toLowerCase())
+			: assistant.getContext(TURNON_CONTEXT.toLowerCase()));
+	if(incomingContext !== null && incomingContext !== undefined && incomingContext.name === TURNOFF_CONTEXT.toLowerCase()) {
+		//Build a bulleted list of items that can be controlled
+		var speechText = "These are currently turned on";
+		var optionItems = [];
+		//Build the option items for the number of items on the list
+		for(var index in incomingContext.parameters.data)
+			optionItems.push(assistant.buildOptionItem(incomingContext.parameters.data[index]._id.toString()).setTitle(incomingContext.parameters.data[index].Description));
+
+		assistant.setContext(incomingContext.name, 5, incomingContext.parameters);
+		assistant.askWithList(speechText, assistant.buildList('Tap on an item to switch it off : ').addItems(optionItems));
+		return;
+	} else if(incomingContext !== null && incomingContext !== undefined && incomingContext.name === TURNON_CONTEXT.toLowerCase()) {
+		//Build a bulleted list of items that can be controlled
+		var speechText = "These are currently turned off";
+		var optionItems = [];
+		//Build the option items for the number of items on the list
+		for(var index in incomingContext.parameters.data)
+			optionItems.push(assistant.buildOptionItem(incomingContext.parameters.data[index]._id.toString()).setTitle(incomingContext.parameters.data[index].Description));
+
+		assistant.setContext(incomingContext.name, 5, incomingContext.parameters);
+		assistant.askWithList(speechText, assistant.buildList('Tap on an item to switch it on : ').addItems(optionItems));
+		return;
+	} else {
+
+		// Connect to the DB and the Nodes Collection
+		mongoDB.collection("nodes", function(err, collection){
+			collection.find({}).toArray(function(err, result){
+
+					//throw the error if found
+					if (err) throw err;
+
+					//based on whether we have more than a single item on the list or not, we can 
+					//either present the user with a list or just a single item
+					if(result.length > 1) {
+						//Build a bulleted list of items that can be controlled
+						var speechText = "You may control the following";
+						var optionItems = [];
+						//Build the option items for the number of items on the list
+						for(var index in result)
+							optionItems.push(assistant.buildOptionItem(result[index]._id.toString()).setTitle(result[index].Description));
+
+						//return response from DB 
+						// assistant.setContext(incomingContext., 1, incomingContext.parameters);
+						assistant.askWithList(speechText, assistant.buildList('Tap on an item to control : ').addItems(optionItems));
+					} else {
+						//Only one item may be controlled, repond appropriately
+						var speechText = "You may control the " + result[0].Description + " only.";
+
+						//ask the user
+						assistant.ask(speechText);
+					}
+
+					//Start creating the object to return to DialogFlow
+					var dialogFlowResponse = {
+						speech : speechText,
+						displayText: 'You may control the following'
+					};
+				});
+		});
+	}
+};
+
+// ============================================================================= //
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
