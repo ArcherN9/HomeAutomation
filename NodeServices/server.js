@@ -97,15 +97,21 @@ router.get('/getAllNodes', function(req, res){
 				if(err) throw err;
 
 				//Extract isNodeTurnedOnStatus from this response
-				var nodeStatus = false;
+				var isTurnedOn = false;
+				var nodeStatus = 0;
+				var lastUpdatedAt = "";
 
 				// Check if nodeDetails was received
 				for(var index in result)
 					if(result[index].NodeDetails) {
 						for(var nodeIndex in result[index].NodeDetails) {
-							nodeStatus = result[index].NodeDetails[nodeIndex].isNodeTurnedOn;
-							//Add a new key isNodeTurnedOn to specify the node status
-							result[index]['isNodeTurnedOn'] = nodeStatus;
+							isTurnedOn 		= result[index].NodeDetails[nodeIndex].isNodeTurnedOn;
+							nodeStatus 		= result[index].NodeDetails[nodeIndex].nodeStatus;
+							lastUpdatedAt 	= result[index].NodeDetails[nodeIndex].lastUpdatedAt;
+							//Add a new key isNodeTurnedOn | status to specify the node status
+							result[index]['isNodeTurnedOn'] = isTurnedOn;
+							result[index]['status']			= nodeStatus;
+							result[index]['lastUpdatedAt']	= lastUpdatedAt;
 						}
 
 						// Delete the NodeDetails from every result object
@@ -382,25 +388,125 @@ router.post('/registerDevice', urlencodedParser, function(req, response) {
 			});
 });
 
+	// ============================================================================= //
+
+//An API to post the latest update on the soil moisture levels. 
+//Params : 
+//nodeId 	: String | The ID of the soil moisture node
+//status    : String | The latest status of the moisture level reported (on a scale of 0-100%)
+router.get('/updateMoistureLevel', urlencodedParser, function(req, res) {
+
+	//Extract the body params passed and conver it into a JSON
+	var queryParams = req.query;
+	//Do not enter if Query params are missing
+	if(queryParams.nodeId !== null && queryParams.nodeId !== undefined
+		&& queryParams.status !== null && queryParams.status !== undefined) {
+
+		//Figure out when the network call was executed. Update the time in the system and send to device as well
+		var updateTimeIST = moment(new Date()).tz("Asia/Kolkata").format('hh:mm A, DD MMM');
+
+		//Console output
+		console.log(new Date() + " : " + "Updating moisture level for node " + queryParams.nodeId + " to " + queryParams.status + " executed at " + updateTimeIST);
+
+		//Query DB and get values for lamp switched on and whether arduino is updating or not
+		mongoDB.collection("status", function(err, collection) {
+
+			//create a query for DB
+			var dbQuery = {
+				nodeId: ObjectID(queryParams.nodeId)
+			};
+
+			//Values to be updated
+			var dbNewValue = {$set:{nodeStatus: queryParams.status, lastUpdatedAt: updateTimeIST}};
+			collection.updateOne(dbQuery, dbNewValue, function(err, items) {
+
+				//Throw error if update failed
+				if(err)
+					throw err;
+
+				//Send User notification when there is a change in the moisture level. 
+				//Create the message payload
+				var notification = {
+					fcmregistrationtoken: "dswysSrpdJk:APA91bEJrohcOiRf9iaSn_CYxKN-z0Gra9ZNitF5CfYY9H2ZJdtveD1mAHvXvHpSWhDrVkhVPu4rji6Oc8rg4TpkCoYwdh2xhapDc5pYGzTBr2dr1_q4d6lGedNKhhTLzhDGMbHhi47B",
+					payload: {
+						data: { 
+							status: queryParams.status ,
+							title: "Home status update",
+							body: (queryParams.status == "LOW") ? "Garden pump has been switched on" : "The garden was watered at " + updateTimeIST
+						}
+					}
+				};
+				
+				//Inform user of said changes in moisture level
+				sendNotification(notification, res);
+
+	     		//Return Response
+	     		var response = {
+	     			'success' : true
+	     		}
+	     		res.json(response);
+	     	});
+		});
+	} else {
+		//Return Response
+		var response = {
+	    	'success' : false,
+	    	'message' : "Check your parameters and try again!"
+	    }
+	    res.json(response);
+	}
+});
+
 // ============================================================================= //
 // Setup a testing POST service to send testing push notification messages
 // Params :
 // fcmregistrationtoken : The FCM ID where the push notification is to be sent
 // payload : The message to send
+// 
+// Refer : https://firebase.google.com/docs/cloud-messaging/admin/send-messages for more information
+// 
+// Example payload 
+// {
+// 	"fcmregistrationtoken" : "",
+// 	"payload": {
+// 		"notification": {
+// 		"title": "",
+//     	"message": ""
+// 		}
+// 	}
+// }
 router.post('/sendNotification', urlencodedParser, function(req, res){
 
 	//Extract the body params passed and conver it into a JSON
 	var jsonResponse = req.body;
-	console.log(new Date() + ":" + "Sending a dummy notification with payload : " + JSON.stringify(jsonResponse));
+	sendNotification(jsonResponse, res);
 
+	// var jsonResponse = {
+	// 				fcmregistrationtoken : "dswysSrpdJk:APA91bEJrohcOiRf9iaSn_CYxKN-z0Gra9ZNitF5CfYY9H2ZJdtveD1mAHvXvHpSWhDrVkhVPu4rji6Oc8rg4TpkCoYwdh2xhapDc5pYGzTBr2dr1_q4d6lGedNKhhTLzhDGMbHhi47B",
+	// 				payload : {
+	// 					// data: { status: queryParams.status },
+	// 					data: { status: "LOW" },
+	// 					notification : {
+	// 						title: "Updating Moisture Information",
+	// 						// message: (queryParams.status == "LOW") ? "Water pump has been turned on" : "Your garden was just watered"
+	// 						body: "Water pump has been turned on"
+	// 					}
+	// 				}
+	// 			};
+	// sendNotification(jsonResponse, res);
+});
+
+//A helper method to call from other APIs as well.
+function sendNotification(notification, res) {
+	console.log(new Date() + ":" + "Sending notification : " + JSON.stringify(notification));
 	// Send a message to the device corresponding to the provided registration token.
-	firebaseAdmin.messaging().sendToDevice(jsonResponse.fcmregistrationtoken, jsonResponse.payload).then(function(response) {
+	firebaseAdmin.messaging().sendToDevice(notification.fcmregistrationtoken, notification.payload, notification.options).then(function(response) {
 	    // See the MessagingDevicesResponse reference documentation for
 	    // the contents of response.
 	    res.json({
 	    	message 	: "Successfully sent message",
-	    	receiver 	: jsonResponse.fcmregistrationtoken, 
-	    	payload 	: jsonResponse.payload
+	    	receiver 	: notification.fcmregistrationtoken, 
+	    	payload 	: notification.payload
 	    });
 	})
 	.catch(function(error) {
@@ -409,7 +515,7 @@ router.post('/sendNotification', urlencodedParser, function(req, res){
 	    	error 		: error
 	    });
 	});
-});
+}
 
 
 // ============================================================================= //
