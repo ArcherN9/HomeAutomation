@@ -14,20 +14,31 @@ class FCMMessagingService: FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         super.onMessageReceived(remoteMessage)
-        Log.i(TAG, "Message received from ${remoteMessage?.from} : ${remoteMessage?.data}")
+        Log.i(TAG, "Message received from ${remoteMessage?.from} : ${remoteMessage?.data} : ${remoteMessage?.notification?.body}")
 
         //Get the notification service
         val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notification: Notification = NotificationCompat.Builder(this@FCMMessagingService, application.packageName + ".USER_ACTION")
-                .setContentTitle(remoteMessage?.data?.getValue("title"))
-                .setContentText(remoteMessage?.data?.getValue("message"))
+        val notification: NotificationCompat.Builder = NotificationCompat.Builder(this@FCMMessagingService, application.packageName + ".USER_ACTION")
                 .setSmallIcon(R.drawable.home_automation_notification_small)
                 .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_home_automation_big))
-                .build()
+                .setDefaults(Notification.DEFAULT_SOUND)
+
+        if (remoteMessage?.data?.get("status") == "LOW") {
+            notification
+                    .setContentTitle(remoteMessage.data?.get("body"))
+                    .setProgress(0, 0, true)
+                    .setOngoing(true)
+        } else {
+            notification
+                    .setContentTitle(remoteMessage?.data?.get("title"))
+                    .setContentText(remoteMessage?.data?.get("body"))
+                    .setProgress(0, 0, false)
+                    .setOngoing(false)
+        }
 
         //Send notification
-        notificationManager.notify(1, notification)
+        notificationManager.notify(1001, notification.build())
     }
 
     companion object {

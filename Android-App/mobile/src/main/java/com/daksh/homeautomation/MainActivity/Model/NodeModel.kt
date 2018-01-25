@@ -19,6 +19,14 @@ class NodeModel {
     var nodeName: String? = null
 
     @Expose
+    @SerializedName("mode")
+    var nodeType: Int? = null
+
+    @Expose
+    @SerializedName("lastUpdatedAt")
+    var nodeUpdatedAt: String? = null
+
+    @Expose
     @SerializedName("Description")
     var nodeDescription:String? = null
 

@@ -8,7 +8,6 @@ import com.daksh.homeautomation.MainActivity.Model.NodeModel
 import com.daksh.homeautomation.R
 import kotlinx.android.synthetic.main.layout_nodelist.view.*
 
-
 class NodeListRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     //The node list
@@ -44,7 +43,7 @@ class NodeListRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int)
-    = (holder as ViewHolder).bind(position, nodeList, interactionListener)
+            = (holder as ViewHolder).bind(position, nodeList, interactionListener)
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder = ViewHolder(parent?.inflateView()!!)
 
@@ -57,16 +56,29 @@ class NodeListRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
             //Set the description of the node
             itemView.nodeDescription.text = nodeList?.get(intPosition)?.nodeDescription
 
-            //Set the status of the node
-            itemView.nodeToggle.isChecked = nodeList?.get(intPosition)?.isNodeTurnedOn!!
+            //Identify the type of node and setup appropriately
+            if(nodeList?.get(intPosition)?.nodeType == 1) {
 
+                //Hide the switch, its not required
+                itemView.nodeToggle.visibility = View.VISIBLE
+                itemView.nodeStatus.visibility = View.GONE
+                //Set the status of the node
+                itemView.nodeToggle.isChecked = nodeList[intPosition].isNodeTurnedOn!!
+            } else if(nodeList?.get(intPosition)?.nodeType == 2) {
+
+                //Hide the switch, its not required
+                itemView.nodeToggle.visibility = View.GONE
+                //Update the status with data received
+                itemView.nodeStatus.visibility = View.VISIBLE
+                itemView.nodeStatus.text = nodeList[intPosition].nodeUpdatedAt
+            }
             //Set the tap listener
             itemView.nodeContainer.setOnClickListener { _ ->
 
                 itemView.nodeToggle.isChecked = !itemView.nodeToggle.isChecked
 
                 //Inform the activity to pass on request to the controller to fetch updated data on the switch
-                interactionListener?.onSwitchExecuted(itemView.nodeToggle.isChecked, intPosition, nodeList[intPosition].nodeId)
+                interactionListener?.onSwitchExecuted(itemView.nodeToggle.isChecked, intPosition, nodeList?.get(intPosition)?.nodeId)
             }
         }
     }

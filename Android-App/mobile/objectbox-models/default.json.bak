@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:3355936500384540446",
-      "lastPropertyId": "8:1807743199682650514",
+      "lastPropertyId": "6:2663987621373918240",
       "name": "NodeModel",
       "properties": [
         {
@@ -31,14 +31,6 @@
         {
           "id": "6:2663987621373918240",
           "name": "isNodeActivated"
-        },
-        {
-          "id": "7:8708635773672451368",
-          "name": "nodeType"
-        },
-        {
-          "id": "8:1807743199682650514",
-          "name": "nodeUpdatedAt"
         }
       ],
       "relations": []
