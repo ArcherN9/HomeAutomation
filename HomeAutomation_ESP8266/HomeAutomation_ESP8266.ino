@@ -2,9 +2,10 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
-const char* ssid = "WiFi SSID";
-const char* password = "WiFi password";
-const String serverUrl = "API Server URI";
+const char* ssid = "DLNA 2.4G";
+const char* password = "$January2018#";
+const String serverUrl = "http://daksh-home-automation.herokuapp.com/api/";
+//const String serverUrl = "http://192.168.1.6:8080/api/";
 const String getStatusAPI = "/getStatus";
 const String updateMoistureLevel = "/updateMoistureLevel";
 const String soilNodeId = "5a48c7bbce31f73679e2b027";
@@ -18,10 +19,10 @@ void setup() {
   WiFi.begin(ssid, password);  //Connect to the WiFi network
   while (WiFi.status() != WL_CONNECTED) {  //Wait for connection
     delay(1000);
-    Serial.println("Trying to connect to WiFi network");
+    //Serial.println("Trying to connect to WiFi network");
   }
-  Serial.print("Acquired IP address: ");
-  Serial.println(WiFi.localIP());  //Print the local IP
+  //Serial.print("Acquired IP address: ");
+  //Serial.println(WiFi.localIP());  //Print the local IP
 }
 
 void loop() {
@@ -38,29 +39,39 @@ void loop() {
       if (httpCode > 0) {
         String jsonString = http.getString();
         //Send it on the serial for the Arduino to parse
-        Serial.println(jsonString);
+//        Serial.print(jsonString);
+        const size_t bufferSize = JSON_OBJECT_SIZE(4) + 150;
+        DynamicJsonBuffer jsonBuffer(bufferSize);
+        JsonObject& root = jsonBuffer.parseObject(jsonString);
+        if (root.success() && root.containsKey("isNodeOn") && root.containsKey("isNodeActivated"))
+          if (root["isNodeOn"] && root["isNodeActivated"]) {
+            Serial.print("{\"status\":\"true\"}");
+          } else {
+            Serial.print("{\"status\":\"false\"}");
+          }
+        http.end();
       }
-      http.end();
 
       //Watering system code begins here
       //Check if Arduino sent any JSON to update back to server
-      String jsonString = Serial.readString();
-      Serial.println("Received data from Arduino : " + jsonString);  
-      //Continue only if some data was received. Water system is updated only on demand
-      if(jsonString != NULL) {
-        char json[400];
-        jsonString.toCharArray(json, 400);
-        StaticJsonBuffer<200> jsonBuffer;
-        JsonObject& root = jsonBuffer.parseObject(json);
-        http.begin(serverUrl + updateMoistureLevel + "?nodeId=" + soilNodeId + "&" + "status=" + root["status"].as<String>());
-        int httpCode = http.GET();
-        //If HTTP status code is not zero, try to read the response
-        if (httpCode > 0)
-          String jsonString = http.getString();
+      if (Serial.available() > 0) {
+        String jsonString = Serial.readString();
+        //Continue only if some data was received. Water system is updated only on demand
+        if(jsonString != NULL) {
+          //Serial.println("Received data from Arduino : " + jsonString);  
+          const size_t bufferSize = JSON_OBJECT_SIZE(1) + 30;
+          DynamicJsonBuffer jsonBuffer(bufferSize);
+          JsonObject& root = jsonBuffer.parseObject(jsonString);
+          http.begin(serverUrl + updateMoistureLevel + "?nodeId=" + soilNodeId + "&" + "status=" + root["status"].as<String>());
+          int httpCode = http.GET();
+          //If HTTP status code is not zero, try to read the response
+          if (httpCode > 0)
+            String jsonString = http.getString();
+        }
       }
       http.end();
     } else {
-      Serial.println("WiFi Not connected");
+      //Serial.println("WiFi Not connected");
     }
     
     delay(3000);
