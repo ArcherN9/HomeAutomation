@@ -5,14 +5,23 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'io.objectbox'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+
+    def versionPropsFile = file('../versionCode')
+    def VersionCode = 0
+    if (versionPropsFile.canRead()) {
+        Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
+        VersionCode = versionProps['VERSION_CODE'].toInteger()
+    }
+
     defaultConfig {
         applicationId "com.daksh.homeautomation"
         minSdkVersion 23
-        targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 27
+        versionCode VersionCode
+        versionName "1.0." + VersionCode
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,10 +40,18 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     //Android dependencies
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.google.android.gms:play-services-wearable:11.8.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.google.firebase:firebase-messaging:11.8.0'
+    implementation ("com.android.support:appcompat-v7:$androidlibraries_version") {
+        exclude module: 'support-media-compat'
+    }
+    implementation ("com.android.support:recyclerview-v7:$androidlibraries_version") {
+        exclude module: 'support-media-compat'
+    }
+    implementation ("com.android.support:support-media-compat:$androidlibraries_version") {
+        exclude module: 'support-v4'
+    }
+    implementation "com.google.android.gms:play-services-wearable:$googlelibraries_version"
+    implementation "com.google.android.gms:play-services-auth:$googlelibraries_version"
+    implementation "com.google.firebase:firebase-messaging:$googlelibraries_version"
 
     //Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -53,6 +70,9 @@ dependencies {
     //ObjectBox
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
     kapt "io.objectbox:objectbox-processor:$objectboxVersion"
+
+    //Circular dial
+    implementation 'com.github.krtkush:LinearTimer:v2.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
