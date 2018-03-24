@@ -3,10 +3,14 @@ jdk: oraclejdk8
 
 android:
     components:
-        #- tools
-        #- platform-tools
+        - tools
+        - platform-tools
         - build-tools:27.0.3
         - android-27
+    licenses:
+        - 'android-sdk-preview-license-.+'
+        - 'android-sdk-license-.+'
+        - 'google-gdk-license-.+'
 
 before_script:
     - cd Android-App
