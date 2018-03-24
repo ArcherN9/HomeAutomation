@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/nodeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground">
+
+        <TextView
+            android:id="@+id/nodeName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:paddingStart="15dp"
+            android:paddingTop="15dp"
+            android:paddingEnd="15dp"
+            android:textColor="@color/grey.primary"
+            android:background="?attr/selectableItemBackground"/>
+
+        <TextView
+            android:id="@+id/nodeDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="14sp"
+            android:paddingStart="15dp"
+            android:paddingBottom="15dp"
+            android:paddingEnd="15dp"
+            android:textColor="@color/grey.secondary"
+            android:layout_below="@id/nodeName"
+            android:background="?attr/selectableItemBackground"/>
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/nodeToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="15dp"
+            android:focusable="false"
+            android:clickable="false"
+            android:layout_alignTop="@id/nodeName"
+            android:layout_alignBottom="@id/nodeDescription"/>
+
+        <TextView
+            android:id="@+id/nodeStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="15dp"
+            android:text=""
+            android:visibility="gone"
+            android:layout_centerVertical="true"/>
+
+        <!--<ProgressBar-->
+            <!--android:id="@+id/nodeProgress"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--style="?android:attr/progressBarStyle"-->
+            <!--android:padding="10dp"-->
+            <!--android:visibility="invisible"-->
+            <!--android:layout_alignTop="@id/nodeToggle"-->
+            <!--android:layout_alignBottom="@id/nodeToggle"-->
+            <!--android:layout_alignStart="@id/nodeToggle"-->
+            <!--android:layout_alignEnd="@id/nodeToggle"/>-->
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/grey.light"/>
+
+</LinearLayout>
