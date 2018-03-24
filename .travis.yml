@@ -1,9 +1,9 @@
 language: android
+jdk: oraclejdk8
 
-install: 
-    - Android-App/./gradlew build
+script: Android-App/./gradlew build connectedCheck
+
 android:
-
     components:
         #- tools
         #- platform-tools
