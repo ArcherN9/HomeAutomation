@@ -3,7 +3,7 @@ jdk: oraclejdk8
 
 script:
     - cd Android-App
-    # - Android-App/./gradlew build connectedCheck
+    - ./gradlew build connectedCheck
 
 android:
     components:
