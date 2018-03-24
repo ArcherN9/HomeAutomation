@@ -1,5 +1,7 @@
 language: android
 
+install: 
+    - ./gradlew build
 android:
 
     components:
