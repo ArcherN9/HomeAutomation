@@ -1,7 +1,9 @@
 language: android
 jdk: oraclejdk8
 
-script: Android-App/./gradlew build connectedCheck
+script:
+    - cd Android-App
+    # - Android-App/./gradlew build connectedCheck
 
 android:
     components:
