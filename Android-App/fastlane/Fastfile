@@ -27,27 +27,36 @@ platform :android do
 	# Increment the build number in the versionCode text file. Data from this file is fetched and used to apply
 	# versionCode information in build.gradle file
   	desc "Increment build number"
- 	lane :increment do
-		# Get the last version code and increment it.
-		versionCode = File.read("../versionCode").split('=')[1].to_i
-		versionCode = versionCode + 1
+    lane :increment do | options |
 
-		versionCodeFile = File.new("../versionCode", "w")
-		versionInfo = "VERSION_CODE=#{versionCode}"
-		versionCodeFile.write(versionInfo)
-		versionCodeFile.close
-	end
+        # Get the last version code from the build number and increment it.
+        # versionCode = File.read("../versionCode").split('=')[1].to_i
+        versionCode = options[:build_number]
+
+        versionCodeFile = File.new("../versionCode", "w")
+        versionInfo = "VERSION_CODE=#{versionCode}"
+        versionCodeFile.write(versionInfo)
+        versionCodeFile.close
+      end
 
 	#Hockey app for alpha deployment
-    desc "Deploy a new beta version to HockeyApp"
-    lane :beta do
-        gradle(task: "assembleDebug")
-        hockey(
-            api_token: "5a4174c71f0e4905be4a90036b60db2a",
-            status: "2", #Download status: "1" = No user can download; "2" = Available for download (only possible with full-access token)  
-            release_type: "2", #Release type of the app: "0" = Beta (default), "1" = Store, "2" = Alpha, "3" = Enterprise
-            apk: "./app/build/outputs/apk/debug/app-debug.apk"
-        )
+    desc "Deploy a build for testing on Beta by crashlytics if BETA keyword is detected. Otherwise, release to Google play store"
+    lane :release do | options |
+
+      # Print the parameter passed for good measure
+      print "Release lane received following parameters : "
+      print options
+
+      if !options[:commit_message].nil?
+        if options[:commit_message].include? 'beta'
+        	hockey(
+            	api_token: "5d9e004630fc4bfd965be6f46b63a12e",
+            	status: "2", #Download status: "1" = No user can download; "2" = Available for download (only possible with full-access token)  
+            	release_type: "2", #Release type of the app: "0" = Beta (default), "1" = Store, "2" = Alpha, "3" = Enterprise
+            	apk: "./app/build/outputs/apk/debug/app-debug.apk"
+          	)
+        end
+      end
     end
 
 	# desc "Deploy a new version to the Google Play"
