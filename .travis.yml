@@ -1,7 +1,7 @@
 language: android
 
 install: 
-    - ./gradlew build
+    - Android-App/./gradlew build
 android:
 
     components:
