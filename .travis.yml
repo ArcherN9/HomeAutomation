@@ -1,9 +1,6 @@
 language: android
 jdk: oraclejdk8
 
-install:
-    - echo yes | sdkmanager build-tools;27.0.3
-
 android:
     components:
         - tools
@@ -14,6 +11,7 @@ android:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
         - 'google-gdk-license-.+'
+        - 'android-sdk-license-2742d1c5'
 
 before_script:
     - cd Android-App
