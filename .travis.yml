@@ -2,7 +2,7 @@ language: android
 jdk: oraclejdk8
 
 install:
-    - echo yes | sdkmanager build-tools-27.0.3
+    - echo yes | sdkmanager build-tools;27.0.3
 
 android:
     components:
