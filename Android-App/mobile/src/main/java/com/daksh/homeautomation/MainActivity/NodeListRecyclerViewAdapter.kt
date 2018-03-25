@@ -42,10 +42,10 @@ class NodeListRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
             0
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
             = (holder as ViewHolder).bind(position, nodeList, interactionListener)
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder = ViewHolder(parent?.inflateView()!!)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = ViewHolder(parent.inflateView())
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
