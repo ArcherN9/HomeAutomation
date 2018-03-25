@@ -1,6 +1,14 @@
 language: android
 jdk: oraclejdk8
 
+cache:
+    - bundler
+  directories:      #Cache all dirs under .gradle folder
+    - $HOME/.gradle/daemon      #Cache daemon logs
+    - $HOME/.gradle/native      #Cache library downloaded from the gradle dependency
+    - $HOME/.gradle/wrapper     #Cache the gradle
+
+
 android:
     components:
         - tools
@@ -9,12 +17,15 @@ android:
         - build-tools-26.0.2
         - android-27
         - android-26
-        
+
     licenses:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
         - 'google-gdk-license-.+'
         - 'android-sdk-license-2742d1c5'
+
+before_install:
+    - gem install fastlane -NV
 
 before_script:
     - cd Android-App
