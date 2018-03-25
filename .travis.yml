@@ -8,7 +8,6 @@ cache:
     - $HOME/.gradle/native      #Cache library downloaded from the gradle dependency
     - $HOME/.gradle/wrapper     #Cache the gradle
 
-
 android:
     components:
         - tools
@@ -26,6 +25,8 @@ android:
 
 before_install:
     - gem install fastlane -NV
+    - bundle install
+    - bundle update
 
 before_script:
     - cd Android-App
