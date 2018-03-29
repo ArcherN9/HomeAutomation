@@ -1,8 +1,5 @@
 language: android
 jdk: oraclejdk8
-
-cache:
-    - bundler
     
   directories:      #Cache all dirs under .gradle folder
     - $HOME/.gradle/daemon      #Cache daemon logs
