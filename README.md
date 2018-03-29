@@ -1,4 +1,4 @@
-# HomeAutomation
+# HomeAutomation [![Build Status](https://travis-ci.org/dakshsrivastava/HomeAutomation.svg?branch=android)](https://travis-ci.org/dakshsrivastava/HomeAutomation)
 
 The first step of any home automation project is to control a light bulb. Its not complex and can be done with minimum resources. The biggest reason though, it serves as a stepping stone for other connected hardware in the home network. Quite naturally, you are limited by your own imagination.
 
