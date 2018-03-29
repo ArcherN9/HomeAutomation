@@ -3,6 +3,7 @@ jdk: oraclejdk8
 
 cache:
     - bundler
+    
   directories:      #Cache all dirs under .gradle folder
     - $HOME/.gradle/daemon      #Cache daemon logs
     - $HOME/.gradle/native      #Cache library downloaded from the gradle dependency
@@ -24,17 +25,14 @@ android:
         - 'android-sdk-license-2742d1c5'
 
 before_install:
-    - gem install fastlane -NV
-    - bundle install
     - bundle update
 
 before_script:
     - cd Android-App
 
 script:
-    - ./gradlew clean
-    - ./gradlew build
-    - ./gradlew test
+    - bundle exec fastlane build
+    - bundle exec fastlane test
 
 after_success:
     - bundle exec fastlane increment build_number:$TRAVIS_BUILD_NUMBER
