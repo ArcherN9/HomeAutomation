@@ -10,6 +10,17 @@ cache:
 before_install:
     - cd NodeServices
 
+script:
+    - npm ls
+
+deploy:
+    provider: heroku
+    api_key: "e9911358-938e-48b8-acd0-491a73e5cea2"
+    app: "daksh-home-automation"
+    on: "nodejs"
+
+
+
 # after_success:
 #     - bundle exec fastlane increment build_number:$TRAVIS_BUILD_NUMBER
 
