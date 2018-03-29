@@ -11,7 +11,7 @@ before_install:
     - cd NodeServices
 
 script:
-    - npm ls
+    - node -v
 
 deploy:
     provider: heroku
