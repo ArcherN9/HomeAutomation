@@ -1,0 +1,21 @@
+language: c
+
+cache:
+  directories:
+  - $TRAVIS_BUILD_DIR/arduinoFolder
+
+before_install:
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-1.6.13-linux64.tar.xz
+  - tar -xvf arduino-1.6.13-linux64.tar.xz
+  - mv arduino-1.6.13 arduinoFolder
+
+install:
+  - arduinoFolder/./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json --save-prefs
+  - arduinoFolder/./arduino --install-library "ArduinoJson:5.13.0"
+  - arduinoFolder/./arduino --install-boards "esp8266:esp8266"
+
+script:
+  - arduinoFolder/./arduino --verify -v --board esp8266:esp8266:generic $TRAVIS_BUILD_DIR/HomeAutomation_ESP8266/HomeAutomation_ESP8266.ino
