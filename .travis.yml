@@ -6,11 +6,12 @@ before_install:
   - export DISPLAY=:1.0
   - wget http://downloads.arduino.cc/arduino-1.8.5-linux32.tar.xz
   - tar -xvf arduino-1.8.5-linux32.tar.xz
-  - sudo mv arduino-1.8.5 /usr/local/share/arduino
-  - sudo ln -s /usr/local/share/arduino/arduino-1.8.5 /usr/local/bin/arduino
+  - sudo mv arduino-1.8.5 /usr/local/share/
+  - sudo mkdir /usr/local/bin/arduino-1.8.5
+  - sudo ln -s /usr/local/share/arduino-1.8.5 /usr/local/bin/arduino-1.8.5
 
 install:
-  - ln -s $PWD /usr/local/share/arduino/arduino-1.8.5/libraries/
+  - ln -s $PWD /usr/local/share/arduino-1.8.5/libraries/
   # - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
 
 script:
