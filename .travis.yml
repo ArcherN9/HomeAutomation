@@ -9,7 +9,7 @@ before_install:
   - sudo mv arduino-1.8.5 /usr/local/share/
   - sudo mkdir /usr/local/bin/arduino-1.8.5
   - sudo ln -s /usr/local/share/arduino-1.8.5 /usr/local/bin/arduino-1.8.5
-  - ln -s $PWD /usr/local/share/arduino-1.8.5/
+  - ln -s /usr/local/share/arduino-1.8.5/ $PWD
 
 # install:
   # - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
