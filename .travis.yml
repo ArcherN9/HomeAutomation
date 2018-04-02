@@ -10,11 +10,9 @@ before_install:
   - sudo mkdir /usr/local/bin/arduino-1.5.2
   - sudo ln -s /usr/local/share/arduino-1.5.2 /usr/local/bin/arduino-1.5.2
   - ln -s /usr/local/share/arduino-1.5.2/
-  - ls -l
-  - cd arduino-1.5.2
 
 # install:
   # - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
 
 script:
-  - ./arduino --verify --board arduino:avr:uno ../HomeAutomation_Arduino/HomeAutomation_Arduino.ino
+  - /usr/local/share/arduino-1.5.2/./arduino --verify --board arduino:avr:uno HomeAutomation_Arduino/HomeAutomation_Arduino.ino
