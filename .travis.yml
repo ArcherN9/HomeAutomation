@@ -8,13 +8,9 @@ before_install:
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
   - sleep 3
   - export DISPLAY=:1.0
+  - chmod -R 755 HomeAutomation_Arduino
   # - wget http://downloads.arduino.cc/arduino-1.5.2-linux64.tgz
   # - tar -xvf arduino-1.5.2-linux64.tgz
-  # - sudo mv arduino-1.5.2 /usr/local/share/
-  # - sudo mkdir /usr/local/bin/arduino-1.5.2
-  # - sudo ln -s /usr/local/share/arduino-1.5.2 /usr/local/bin/arduino-1.5.2
-  # - ln -s /usr/local/share/arduino-1.5.2/
-  - ls -lR
 
 # install:
   # - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
