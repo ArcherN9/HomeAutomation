@@ -4,18 +4,16 @@ before_install:
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
   - sleep 3
   - export DISPLAY=:1.0
-  - wget http://downloads.arduino.cc/arduino-1.8.5-linux32.tar.xz
-  - tar -xvf arduino-1.8.5-linux32.tar.xz
-  - sudo mv arduino-1.8.5 /usr/local/share/
-  - sudo mkdir /usr/local/bin/arduino-1.8.5
-  - sudo ln -s /usr/local/share/arduino-1.8.5 /usr/local/bin/arduino-1.8.5
-  - ln -s /usr/local/share/arduino-1.8.5/
-  - cd arduino-1.8.5
-  - echo $PWD
-  - ls -ls
+  - wget http://downloads.arduino.cc/arduino-1.5.2-linux64.tgz
+  - tar -xvf arduino-1.5.2-linux64.tgz
+  - sudo mv arduino-1.5.2 /usr/local/share/
+  - sudo mkdir /usr/local/bin/arduino-1.5.2
+  - sudo ln -s /usr/local/share/arduino-1.5.2 /usr/local/bin/arduino-1.5.2
+  - ln -s /usr/local/share/arduino-1.5.2/
+  - cd arduino-1.5.2
 
 # install:
   # - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
 
 script:
-  - ./arduino --verify --board arduino:avr:uno $PWD/HomeAutomation_Arduino/HomeAutomation_Arduino.ino
+  - ./arduino --verify --board arduino:avr:uno ../HomeAutomation_Arduino/HomeAutomation_Arduino.ino
