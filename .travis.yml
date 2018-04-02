@@ -11,9 +11,11 @@ before_install:
   - sudo ln -s /usr/local/share/arduino-1.8.5 /usr/local/bin/arduino-1.8.5
   - ln -s /usr/local/share/arduino-1.8.5/
   - cd arduino-1.8.5
+  - echo $PWD
+  - ls -ls
 
 # install:
   # - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
 
 script:
-  - arduino --verify --board arduino:avr:uno $PWD/HomeAutomation_Arduino/HomeAutomation_Arduino.ino
+  - ./arduino --verify --board arduino:avr:uno $PWD/HomeAutomation_Arduino/HomeAutomation_Arduino.ino
