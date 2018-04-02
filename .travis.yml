@@ -14,7 +14,7 @@ before_install:
   - mv arduino-1.6.13 arduino
 
 install:
-  - arduino/.arduino --install-library "ArduinoJson:5.13.0"
+  - arduino/./arduino --install-library "ArduinoJson:5.13.0"
 
 script:
   - arduino/./arduino --verify --board arduino:avr:uno $TRAVIS_BUILD_DIR/HomeAutomation_Arduino/HomeAutomation_Arduino.ino
