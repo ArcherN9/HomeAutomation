@@ -16,4 +16,4 @@ before_install:
   # - arduino --install-library "Adafruit SleepyDog Library,Adafruit MQTT Library"
 
 script:
-  - arduino-1.5.2/./arduino --verify --board arduino:avr:uno HomeAutomation_Arduino/HomeAutomation_Arduino.ino
+  - arduino-1.5.2/./arduino --verify --board arduino:avr:uno $TRAVIS_BUILD_DIR/HomeAutomation_Arduino/HomeAutomation_Arduino.ino
