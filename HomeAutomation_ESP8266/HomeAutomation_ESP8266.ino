@@ -2,10 +2,10 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
-const char* ssid = "DLNA 2.4G";
-const char* password = "$January2018#";
-const String serverUrl = "http://daksh-home-automation.herokuapp.com/api/";
-//const String serverUrl = "http://192.168.1.6:8080/api/";
+const char* ssid = "<ENTER WiFi Name here>";
+const char* password = "WiFi Password Here";
+const String serverUrl = "<PRODUCTION SERVER URL HERE>";
+//const String serverUrl = "<TESTING SERVER URL HERE>";
 const String getStatusAPI = "/getStatus";
 const String updateMoistureLevel = "/updateMoistureLevel";
 const String soilNodeId = "5a48c7bbce31f73679e2b027";
@@ -76,60 +76,3 @@ void loop() {
     
     delay(3000);
 }
-
-
-  
-//  //Check the current reading from the soil moisture module. The threshold using the potentiameter is set at 61%.
-//  //if the value decreased below this, the value from DO changes to LOW. (Low on resistance, high on moisture) Switch the relay
-//  //ON
-//  int intMoistureLevel = digitalRead(0);
-//  if (intMoistureLevel == HIGH) {
-//    //Log to console | Moisture is LOW, resitance is HIGH
-//    Serial.println("Moisture level is LOW");
-//    //Switch GPIO2 to output mode and turn on the relay. This will start the pump
-//    pinMode(2, OUTPUT);
-//    digitalWrite(2, HIGH);
-//    //Call the loop quicky again so that we don't over water the plants
-//    delay(300);
-//
-//    //If the WiFi is connected, update the value in the system as well
-//    if (WiFi.status() == WL_CONNECTED && !isUpdated) {
-//      HTTPClient http;
-//      http.begin(serverUrl + updateMoistureLevel + "?nodeId=" + nodeId + "&" + "status=" + "LOW");
-//      int httpCode = http.GET();
-//
-//      if (httpCode > 0) {
-//        String jsonString = http.getString();
-//        Serial.println(jsonString);
-//      }
-//      http.end();
-//      isUpdated = true;
-//    }
-//
-//  } else {
-//    //Log to console | Soil moisture level is High, resistance is low
-//    Serial.println("Moisture level is HIGH");
-//   
-//    //Turn off the relay | Switch off the pump just in case
-//    pinMode(2, INPUT);
-//    //Moisture level is within threshold limit, Chill | Check after 1 hour
-//    delay(3600000);
-//    //delay(1000);
-//
-//    //If the WiFi is connected, update the value in the system as well
-//    if (WiFi.status() == WL_CONNECTED && isUpdated) {
-//      HTTPClient http;
-//      http.begin(serverUrl + updateMoistureLevel + "?nodeId=" + nodeId + "&" + "status=" + "HIGH");
-//      int httpCode = http.GET();
-//
-//      if (httpCode > 0) {
-//        String jsonString = http.getString();
-//        Serial.println(jsonString);
-//      }
-//      http.end();
-//      //Inverse of previous if condition | This is done so that each of the If conditions to update the server is 
-//      //done only once
-//      isUpdated = false;
-//    }
-//  }
-//}
