@@ -1,8 +1,8 @@
 language: c
 
-cache:
-  directories:
-  - $HOME/arduino_ide
+# cache:
+#   directories:
+#   - $HOME/arduino_ide
 
 before_install:
   - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
