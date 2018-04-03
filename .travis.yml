@@ -11,7 +11,7 @@ before_install:
   - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
 
 # install:
-  - arduinoFolder/./arduino --install-library "ArduinoJson:5.13.0"
+  - arduino --install-library "ArduinoJson:5.13.0"
   # - arduinoFolder/./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --install-boards "esp8266:esp8266"
 
 script:
