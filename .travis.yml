@@ -5,15 +5,10 @@ cache:
   - $HOME/arduino_ide
 
 before_install:
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
-  - sleep 3
-  - export DISPLAY=:1.0
   - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
 
-# install:
+install:
   - arduino --install-library "ArduinoJson:5.13.0"
-  # - arduinoFolder/./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --install-boards "esp8266:esp8266"
 
 script:
   - build_platform esp8266
-  # - arduinoFolder/./arduino --verify -v --board esp8266:esp8266:generic $TRAVIS_BUILD_DIR/HomeAutomation_ESP8266/HomeAutomation_ESP8266.ino  }
