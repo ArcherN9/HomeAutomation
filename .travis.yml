@@ -11,11 +11,12 @@ before_install:
   - wget http://downloads.arduino.cc/arduino-1.5.2-linux64.tgz
   - tar -xvf arduino-1.5.2-linux64.tgz
   - mv arduino-1.5.2 arduinoFolder
+  - ls -lR
 
 install:
-  - arduinoFolder/./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --save-prefs
-  - arduinoFolder/./arduino --install-library "ArduinoJson:5.13.0"
-  - arduinoFolder/./arduino --install-boards "esp8266:esp8266"
+  - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --save-prefs
+  - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --install-library "ArduinoJson:5.13.0"
+  - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --install-boards "esp8266:esp8266"
 
 script:
-  - arduinoFolder/./arduino --verify -v --board esp8266:esp8266:generic $TRAVIS_BUILD_DIR/HomeAutomation_ESP8266/HomeAutomation_ESP8266.ino
+  - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --verify -v --board esp8266:esp8266:generic $TRAVIS_BUILD_DIR/HomeAutomation_ESP8266/HomeAutomation_ESP8266.ino
