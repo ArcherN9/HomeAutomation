@@ -1,17 +1,17 @@
 language: c
 
-# cache:
-  # directories:
-  # - $TRAVIS_BUILD_DIR/arduinoFolder
+cache:
+  directories:
+  - $TRAVIS_BUILD_DIR/arduino-1.5.2
 
 before_install:
-  # - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
-  # - sleep 3
-  # - export DISPLAY=:1.0
-  # - wget http://downloads.arduino.cc/arduino-1.5.2-linux64.tgz
-  # - tar -xvf arduino-1.5.2-linux64.tgz
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-1.5.2-linux64.tgz
+  - tar -xvf arduino-1.5.2-linux64.tgz
   # - mv arduino-1.5.2 arduinoFolder
-  - ls -lR
+  # - ls -lR
 
 # install:
   # - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --save-prefs
