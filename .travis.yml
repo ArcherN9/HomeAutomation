@@ -2,20 +2,21 @@ language: c
 
 cache:
   directories:
-  - $TRAVIS_BUILD_DIR/arduinoFolder
+  # - $TRAVIS_BUILD_DIR/arduinoFolder
+  - $TRAVIS_BUILD_DIR/arduino-1.6.5
 
 before_install:
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
   - sleep 3
   - export DISPLAY=:1.0
-  # - wget http://downloads.arduino.cc/arduino-1.5.2-linux64.tgz
-  # - tar -xvf arduino-1.5.2-linux64.tgz
-  - ls -Rl
+  - wget http://downloads.arduino.cc/arduino-1.6.5-linux64.tar.xz
+  - tar -xvf arduino-1.6.5-linux64.tar.xz
+  # - ls -Rl
 
-install:
-  - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --save-prefs
-  - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --install-library "ArduinoJson:5.13.0"
-  - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --install-boards "esp8266:esp8266"
+# install:
+#   - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --save-prefs
+#   - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --install-library "ArduinoJson:5.13.0"
+#   - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --install-boards "esp8266:esp8266"
 
-script:
-  - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --verify -v --board esp8266:esp8266:generic $TRAVIS_BUILD_DIR/HomeAutomation_ESP8266/HomeAutomation_ESP8266.ino
+# script:
+#   - $TRAVIS_BUILD_DIR/arduinoFolder/./arduino --verify -v --board esp8266:esp8266:generic $TRAVIS_BUILD_DIR/HomeAutomation_ESP8266/HomeAutomation_ESP8266.ino
