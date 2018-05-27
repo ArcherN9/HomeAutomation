@@ -29,4 +29,4 @@ script:
 
 after_success:
     - bundle exec fastlane increment build_number:$TRAVIS_BUILD_NUMBER
-    - bundle exec fastlane release commit_message:$TRAVIS_COMMIT_MESSAGE
+    - bundle exec fastlane release commit_message:"$TRAVIS_COMMIT_MESSAGE"
