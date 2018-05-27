@@ -351,8 +351,7 @@ recurrenceRule.minute = moment(UTCTime).format('m');
 
 				// Schedule a job to send a push notification 30 minutes before sundown, everyday
 				var ISTSunsetTime = moment(res.ops[0].sunset);
-				// var ISTPush = ISTSunsetTime.subtract(15, 'minute');
-				var ISTPush = moment(new Date()).add(1, 'minute');
+				var ISTPush = ISTSunsetTime.subtract(15, 'minute');
 				var ISTScheduledPush = nodeSchedule.scheduleJob(ISTPush.format(), function(){
 					mongoDB.collection("devices").find({}).toArray(scheduledPushNotification);
 				});
@@ -376,30 +375,30 @@ recurrenceRule.minute = moment(UTCTime).format('m');
  * @param  {[type]} result The result of the find({}) query in devices collection
  */
 function scheduledPushNotification(err, result) {
-	//Throw error if find failed
-	// if(err) throw err;
+	// Throw error if find failed
+	if(err) throw err;
 
-	// //Create an array of FCMIds
-	// var fcmIDs = [];
+	// Create an array of FCMIds
+	var fcmIDs = [];
 
-	// for(var index in result)
-	// 	fcmIDs.push(result[index].fcmid);
+	for(var index in result)
+		fcmIDs.push(result[index].fcmid);
 
-	// //Send User notification to turn on the lights
-	// //Create the message payload
-	// var notification = {
-	// 	fcmregistrationtoken: fcmIDs,
-	// 	payload: {
-	// 		data: { 
-	// 			status: queryParams.status ,
-	// 			title: "Turn on the lights?",
-	// 			body: "Sundown in 30 minutes. Turn on?"
-	// 		}
-	// 	}
-	// };
+	//Send User notification to turn on the lights
+	//Create the message payload†
+	var notification = {
+		fcmregistrationtoken: fcmIDs,
+		payload: {
+			data: { 
+				// status: queryParams.status ,
+				title: "Turn on the lights?",
+				body: "Sundown in 15 minutes. Turn on lights for Elsa?"
+			}
+		}
+	};
 	
-	// //Inform user of said changes in moisture level
-	// sendNotification(notification, res);
+	//Inform user of said changes in moisture level
+	sendNotification(notification, undefined);
 }
 
 // ============================================================================= //
