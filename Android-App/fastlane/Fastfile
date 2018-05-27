@@ -68,7 +68,7 @@ platform :android do
                     api_token: "5d9e004630fc4bfd965be6f46b63a12e",
                     status: "2", #Download status: "1" = No user can download; "2" = Available for download (only possible with full-access token)  
                     release_type: "2", #Release type of the app: "0" = Beta (default), "1" = Store, "2" = Alpha, "3" = Enterprise
-                    apk: "./app/build/outputs/apk/debug/app-debug.apk"
+                    apk: "./mobile/build/outputs/apk/debug/mobile-debug.apk"
                 )
             end
         end
