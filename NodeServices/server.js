@@ -49,8 +49,9 @@ var port = process.env.PORT || 8080;        // set our port
 // Make connection to the Database
 // =============================================================================
 // Connect to the db
-mongoClient.connect("mongodb://" + databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password 
-	+ "@" + databaseConfigration.mongoDB.databaseUrl + ":" + databaseConfigration.mongoDB.port + "/" + databaseConfigration.mongoDB.name, function (err, db) {
+// mongoClient.connect("mongodb://" + databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password + "@" + 
+mongoClient.connect("mongodb://" + 
+	databaseConfigration.mongoDB.databaseUrl + ":" + databaseConfigration.mongoDB.port + "/" + databaseConfigration.mongoDB.name, function (err, db) {
    	//Catch exceptions
    	if(err) {
    		console.log(databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password);
@@ -298,7 +299,7 @@ recurrenceRule.hour = moment(UTCTime).format('k');
 recurrenceRule.minute = moment(UTCTime).format('m');
 
 //Schedule the job and define the function to be executed every morning at 04:00 AM
-var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
+// var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 
 	//Create a new object of UTC time and convert to IST to find for which date is the data being requested
 	var todayUTC = moment(new Date()).tz("Europe/London");
@@ -316,16 +317,28 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 			//convert to JSON
 			var jsonResponse = JSON.parse(body);
 			//parse sunrise and sunset time and save to GMT
-			var todaySunrise = moment(moment.tz(jsonResponse.results.sunrise, "hh:mm:ss A", "Europe/London").tz("Asia/Kolkata")).format('hh:mm A');
-			var todaySunset = moment(moment.tz(jsonResponse.results.sunset, "hh:mm:ss A", "Europe/London").tz("Asia/Kolkata")).format('hh:mm A');
+			var todaySunrise = moment.tz(jsonResponse.results.sunrise, "hh:mm:ss a", "Europe/London");
+			var todaySunset = moment.tz(jsonResponse.results.sunset, "hh:mm:ss A", "Europe/London");
 
-			console.log(new Date() + ":" + miscConfiguration.host + " responded with sunrise and sunset values - sunrise : " + todaySunrise + " | sunset : " + todaySunset);
+			console.log(new Date() + ":" + miscConfiguration.host + " responded with sunrise and sunset values - sunrise : " + todaySunrise.format("DD-MM-YYYYY hh:mm a Z") + " | sunset : " + todaySunset.format("DD-MM-YYYYY  hh:mm a Z"));
 
 			var daylight = {
-				Sunrise 	: todaySunrise,
-				sunset 		: todaySunset,
-				date 		: moment(todayIST).format('YYYY-MM-DD')
+				Sunrise 	: todaySunrise.format(),
+				sunset 		: todaySunset.format(),
+				date 		: moment(todaySunset).format('YYYY-MM-DD')
 			}
+
+			var previousDay = {
+				date 		: moment(todaySunset).subtract(1, 'days').format('YYYY-MM-DD')
+			};
+			
+			//Delete the previous day entry to not make the DB bloated unnecessarily
+			mongoDB.collection("daylight").deleteOne(previousDay, function(err, res){
+				//Throw error if found
+				if(err) throw err;
+
+				console.log(new Date() + ":" + "Entry " + JSON.stringify(previousDay) + " has been deleted.");
+			});
 
 			//Store value in DB
 			mongoDB.collection("daylight").insertOne(daylight, function(err, res){
@@ -336,14 +349,58 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 				//Log output to console
 				console.log(new Date() + ":" + "Data stored to DB : " + JSON.stringify(res.ops));
 
+				// Schedule a job to send a push notification 30 minutes before sundown, everyday
+				var ISTSunsetTime = moment(res.ops[0].sunset);
+				// var ISTPush = ISTSunsetTime.subtract(15, 'minute');
+				var ISTPush = moment(new Date()).add(1, 'minute');
+				var ISTScheduledPush = nodeSchedule.scheduleJob(ISTPush.format(), function(){
+					mongoDB.collection("devices").find({}).toArray(scheduledPushNotification);
+				});
 				//Log next invocation
-				console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
+				console.log(new Date() + ":" + "Service will push a notification to turn on lights at " + ISTScheduledPush.nextInvocation());
+				// console.log(new Date() + ":" + "Service will push a notification to turn on lights at " + ISTPush.format());
+				
+				//Log next invocation
+				// console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
 			});
 		});
-});
+// });
 
 //Log next invocation
-console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
+// console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
+
+/**
+ * This method is always executed as a scheduled job through #ISTScheduledPush. It is used to structure a notification
+ * to inform the user of sundown and ask if the lights should be turned on.
+ * @param  {[type]} err    Error if something went wrong
+ * @param  {[type]} result The result of the find({}) query in devices collection
+ */
+function scheduledPushNotification(err, result) {
+	//Throw error if find failed
+	// if(err) throw err;
+
+	// //Create an array of FCMIds
+	// var fcmIDs = [];
+
+	// for(var index in result)
+	// 	fcmIDs.push(result[index].fcmid);
+
+	// //Send User notification to turn on the lights
+	// //Create the message payload
+	// var notification = {
+	// 	fcmregistrationtoken: fcmIDs,
+	// 	payload: {
+	// 		data: { 
+	// 			status: queryParams.status ,
+	// 			title: "Turn on the lights?",
+	// 			body: "Sundown in 30 minutes. Turn on?"
+	// 		}
+	// 	}
+	// };
+	
+	// //Inform user of said changes in moisture level
+	// sendNotification(notification, res);
+}
 
 // ============================================================================= //
 // 
@@ -580,17 +637,19 @@ function sendNotification(notification, res) {
 	firebaseAdmin.messaging().sendToDevice(notification.fcmregistrationtoken, notification.payload, notification.options).then(function(response) {
 	    // See the MessagingDevicesResponse reference documentation for
 	    // the contents of response.
-	    res.json({
-	    	message 	: "Successfully sent message",
-	    	receiver 	: notification.fcmregistrationtoken, 
-	    	payload 	: notification.payload
-	    });
+	    if(res !== null && res !== undefined)
+		    res.json({
+		    	message 	: "Successfully sent message",
+		    	receiver 	: notification.fcmregistrationtoken, 
+		    	payload 	: notification.payload
+		    });
 	})
 	.catch(function(error) {
-		res.json({
-	    	message 	: "Message failed",
-	    	error 		: error
-	    });
+		if(res !== null && res !== undefined)
+			res.json({
+		    	message 	: "Message failed",
+		    	error 		: error
+		    });
 	});
 }
 
