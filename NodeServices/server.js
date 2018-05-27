@@ -299,7 +299,7 @@ recurrenceRule.hour = moment(UTCTime).format('k');
 recurrenceRule.minute = moment(UTCTime).format('m');
 
 //Schedule the job and define the function to be executed every morning at 04:00 AM
-// var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
+var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 
 	//Create a new object of UTC time and convert to IST to find for which date is the data being requested
 	var todayUTC = moment(new Date()).tz("Europe/London");
@@ -363,10 +363,10 @@ recurrenceRule.minute = moment(UTCTime).format('m');
 				// console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
 			});
 		});
-// });
+});
 
-//Log next invocation
-// console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
+// Log next invocation
+console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
 
 /**
  * This method is always executed as a scheduled job through #ISTScheduledPush. It is used to structure a notification
