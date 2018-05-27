@@ -24,18 +24,23 @@ class FCMMessagingService: FirebaseMessagingService() {
                 .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_home_automation_big))
                 .setDefaults(Notification.DEFAULT_SOUND)
 
-        if (remoteMessage?.data?.get("status") == "LOW") {
-            notification
-                    .setContentTitle(remoteMessage.data?.get("body"))
-                    .setProgress(0, 0, true)
-                    .setOngoing(true)
-        } else {
-            notification
-                    .setContentTitle(remoteMessage?.data?.get("title"))
-                    .setContentText(remoteMessage?.data?.get("body"))
-                    .setProgress(0, 0, false)
-                    .setOngoing(false)
-        }
+        if(remoteMessage?.data?.containsKey("status")!!)
+            if (remoteMessage.data?.get("status") == "LOW") {
+                notification
+                        .setContentTitle(remoteMessage.data?.get("body"))
+                        .setProgress(0, 0, true)
+                        .setOngoing(true)
+            } else {
+                notification
+                        .setContentTitle(remoteMessage?.data?.get("title"))
+                        .setContentText(remoteMessage?.data?.get("body"))
+                        .setProgress(0, 0, false)
+                        .setOngoing(false)
+            }
+        notification
+                .setContentTitle(remoteMessage.data?.get("title"))
+                .setContentText(remoteMessage.data?.get("body"))
+                .setOngoing(false)
 
         //Send notification
         notificationManager.notify(1001, notification.build())
