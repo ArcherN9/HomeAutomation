@@ -49,8 +49,8 @@ var port = process.env.PORT || 8080;        // set our port
 // Make connection to the Database
 // =============================================================================
 // Connect to the db
-// mongoClient.connect("mongodb://" + databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password + "@" + 
-mongoClient.connect("mongodb://" + 
+mongoClient.connect("mongodb://" + databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password + "@" + 
+// mongoClient.connect("mongodb://" + 
 	databaseConfigration.mongoDB.databaseUrl + ":" + databaseConfigration.mongoDB.port + "/" + databaseConfigration.mongoDB.name, function (err, db) {
    	//Catch exceptions
    	if(err) {
