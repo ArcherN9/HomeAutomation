@@ -652,6 +652,33 @@ function sendNotification(notification, res) {
 	});
 }
 
+// ============================================================================= //
+// 
+// Setup an end point to accept commands from the Samsung SmartThings hub/portal/application/system.
+// This server is never called from the user but always from Samsung SmartThings system.
+// 1. Refer [here] for details on the integration
+// 2. Refer  [https://smartthings.developer.samsung.com/develop/guides/smartapps/webhook-apps.html] for details on how this service has been made
+// 3. Refer all API docs from Samsung SmartThings here : https://smartthings.developer.samsung.com/develop/api-ref/smartapps-v1.html#operation/execute
+
+router.post('/smartThingsConnect', urlencodedParser, function(req, res){
+	console.log(new Date() + ":" + "Smart things event Received : " + JSON.stringify(req.body));
+
+	//Get body of message in a different object | Its easier this way
+	var jsonBody = req.body;
+
+	//Check what command was issued
+	//
+	// Check if event issued was PING
+	if(jsonBody.pingData)
+		if(jsonBody.pingData.challenge)
+			res.json({
+				statusCode: 0,
+				pingData: {
+					challenge: jsonBody.pingData.challenge
+				}
+			});
+});
+
 
 // ============================================================================= //
 //
