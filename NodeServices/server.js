@@ -700,6 +700,32 @@ router.post('/smartThingsConnect', urlencodedParser, function(req, res){
 							}
 						});
 						break;
+
+					// Phase : PAGE
+					case "PAGE":
+						res.json({
+							configurationData: {
+								page: {
+									pageId: "1",
+									name: "Turns on the lamp when switch is turned on",
+									complete: true,
+									sections: [{
+										settings:[{
+											capabilities: [
+												"switch"
+											],
+											permissions: [
+												"r",
+												"x"
+											]
+										}]
+									}],
+									required: true,
+									multiple: false
+								}
+							}
+						});
+						break;
 				}
 			break;
 	}
