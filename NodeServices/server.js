@@ -708,7 +708,6 @@ router.post('/smartThingsConnect', urlencodedParser, function(req, res){
 								page: {
 									pageId: "1",
 									name: "Turns on the lamp when switch is turned on",
-									complete: true,
 									sections: [{
 										settings:[{
 											capabilities: [
@@ -722,7 +721,8 @@ router.post('/smartThingsConnect', urlencodedParser, function(req, res){
 									}],
 									required: true,
 									multiple: false
-								}
+								},
+							complete: true,
 							}
 						});
 						break;
