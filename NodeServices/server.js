@@ -49,8 +49,8 @@ var port = process.env.PORT || 8080;        // set our port
 // Make connection to the Database
 // =============================================================================
 // Connect to the db
-mongoClient.connect("mongodb://" + databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password + "@" + 
-// mongoClient.connect("mongodb://" + 
+mongoClient.connect("mongodb://" + databaseConfigration.mongoDB.username + ":" + databaseConfigration.mongoDB.password + "@" +
+// mongoClient.connect("mongodb://" +
 	databaseConfigration.mongoDB.databaseUrl + ":" + databaseConfigration.mongoDB.port + "/" + databaseConfigration.mongoDB.name, function (err, db) {
    	//Catch exceptions
    	if(err) {
@@ -77,21 +77,21 @@ router.get('/', function(req, res) {
 });
 
 // ============================================================================= //
-// 
+//
 // The get all nodes API. It returns all nodes and their statuses to the caller
 router.get('/getAllNodes', function(req, res){
 	console.log(new Date() + ":" + "All nodes requested, Querying DB for all nodes");
 
 	//Query the DB & get the collection which has all information w.r.t nodes
 	mongoDB.collection('nodes', function(err, collection){
-		
+
 		collection.aggregate([
 			{ $lookup: {
 				from: 'status',
 				localField: '_id',
 				foreignField: 'nodeId',
 				as: 'NodeDetails'
-			}}	
+			}}
 			]).toArray(function(err, result){
 
 				//Throw error if it doesn't work
@@ -128,11 +128,11 @@ router.get('/getAllNodes', function(req, res){
 // ============================================================================= //
 
 //Toggle switch
-//Query Params : 
+//Query Params :
 //nodeId : xxxxxxx | The ID of the node that is being toggled
 //status  : true, fase | The new value of the node
 router.get('/toggleSwitch', function(req, res) {
-	
+
 	//Extract the query params
 	var queryParams = req.query;
 
@@ -168,7 +168,7 @@ router.get('/toggleSwitch', function(req, res) {
 	     		collection.findOne(dbQuery, function(err, items) {
 	     			if(err)
 	     				throw err;
-	     			
+
 	     			//Replace the _id value with value from nodeId and delete that key
 	     			items._id = items.nodeId;
 	     			//Delete the key now
@@ -178,7 +178,7 @@ router.get('/toggleSwitch', function(req, res) {
 	     		});
 	     	});
 		});
-	} else 
+	} else
 		//Log the output back to the user
 		res.json({
 			message				: 'Query params missing. Please retry.',
@@ -190,7 +190,7 @@ router.get('/toggleSwitch', function(req, res) {
 
 //Get updated status of the lamp | This is the API end point which will be accessed by either the Arduino or
 //a client that will pass on the state to the Arduino
-//Query Params : 
+//Query Params :
 //nodeId : xxxxxxx | The ID of the node that is being toggled
 router.get('/getStatus', function(req, res) {
 
@@ -227,7 +227,7 @@ router.get('/getStatus', function(req, res) {
 	     		//Log the output back to the user
 	     		res.json({
 	     			message				: strMessage,
-	     			isNodeOn			: items.isNodeTurnedOn, 
+	     			isNodeOn			: items.isNodeTurnedOn,
 	     			isNodeActivated		: true,
 	     			success				: true
 	     		});
@@ -245,7 +245,7 @@ router.get('/getStatus', function(req, res) {
 // ============================================================================= //
 
 //Turn off Arduino from requesting lamp status on Google Cloud
-//Query Params : 
+//Query Params :
 //arduinoStatus : 1 or 0 | 0 = off | 1 = on
 // router.get('/arduino', function(req, res) {
 
@@ -262,9 +262,9 @@ router.get('/getStatus', function(req, res) {
 // 	isArduinoUpdating = queryParams.isArduinoUpdating === 'true';
 
 // 	if(!isArduinoUpdating)
-// 		strMessage = "Service requests to Google Console have been turned off for Arduino."; 
+// 		strMessage = "Service requests to Google Console have been turned off for Arduino.";
 // 	else
-// 		strMessage = "Service requests to Google Console have been turned on for Arduino."; 
+// 		strMessage = "Service requests to Google Console have been turned on for Arduino.";
 
 // 	//Send response
 // 	res.json({
@@ -276,7 +276,7 @@ router.get('/getStatus', function(req, res) {
 // });
 
 // ============================================================================= //
-// 
+//
 // Getting the time will return in local time (Depending on where the server resides, the time will be different - Most probably, UTC)
 // To fix that issue and schedule the sunSchedule according to IST, we need to convert the time to IST - To do that, we use Moment.js
 
@@ -305,7 +305,7 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 	var todayUTC = moment(new Date()).tz("Europe/London");
 	//convert
 	var todayIST = todayUTC.tz("Asia/Kolkata");
-	
+
 	//Execute the GET API for sunset and sunrise timings for defined date
 	//lat (float): Latitude in decimal degrees. Required.
 	//lng (float): Longitude in decimal degrees. Required.
@@ -331,7 +331,7 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 			var previousDay = {
 				date 		: moment(todaySunset).subtract(1, 'days').format('YYYY-MM-DD')
 			};
-			
+
 			//Delete the previous day entry to not make the DB bloated unnecessarily
 			mongoDB.collection("daylight").deleteOne(previousDay, function(err, res){
 				//Throw error if found
@@ -342,7 +342,7 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 
 			//Store value in DB
 			mongoDB.collection("daylight").insertOne(daylight, function(err, res){
-				
+
 				//Throw error if found
 				if(err) throw err;
 
@@ -358,7 +358,7 @@ var sunSchedule = nodeSchedule.scheduleJob(recurrenceRule, function(){
 				//Log next invocation
 				console.log(new Date() + ":" + "Service will push a notification to turn on lights at " + ISTScheduledPush.nextInvocation());
 				// console.log(new Date() + ":" + "Service will push a notification to turn on lights at " + ISTPush.format());
-				
+
 				//Log next invocation
 				// console.log(new Date() + ":" + "Service will retrieve sunset and sunrise timings next on " + sunSchedule.nextInvocation());
 			});
@@ -389,21 +389,21 @@ function scheduledPushNotification(err, result) {
 	var notification = {
 		fcmregistrationtoken: fcmIDs,
 		payload: {
-			data: { 
+			data: {
 				// status: queryParams.status ,
 				title: "Turn on the lights?",
 				body: "Sundown in 15 minutes. Turn on lights for Elsa?"
 			}
 		}
 	};
-	
+
 	//Inform user of said changes in moisture level
 	sendNotification(notification, undefined);
 }
 
 // ============================================================================= //
-// 
-// An API to enable users to login in to the ecosystem. It accepts the user email ID 
+//
+// An API to enable users to login in to the ecosystem. It accepts the user email ID
 // and assigns a unique ObjectID to it. This ID is unique and is used to add devices
 // to the user so notifications can be sent to all devices
 // params :
@@ -421,7 +421,7 @@ router.post('/login', urlencodedParser, function(req, response) {
 			if(err) throw err;
 			//create a query for DB
 			var dbQuery = { emailId: loginParams.emailId };
-			
+
 			//Find the email ID in the database. If it exists, we will return it. If not, we will create a new entry
 			collection.findOne(dbQuery, function(err, items) {
 				if(err)
@@ -466,10 +466,10 @@ router.post('/login', urlencodedParser, function(req, response) {
 
 // ============================================================================= //
 
-//An API to register the FCM token with the server. Whenever a fresh token is retrieved from the library, 
+//An API to register the FCM token with the server. Whenever a fresh token is retrieved from the library,
 //This api will be called to reigster and transfer the token to the MongoDB. This will path way for authentication
 //in the future
-//Params : 
+//Params :
 //fcmid : String | The ID against which push notifications will be sent to the user
 //name 	: String | The name of the device
 //uid 	: String | The Secure ID of the device. This will help in the future to store refreshed tokens
@@ -523,8 +523,8 @@ router.post('/registerDevice', urlencodedParser, function(req, response) {
 
 // ============================================================================= //
 
-//An API to post the latest update on the soil moisture levels. 
-//Params : 
+//An API to post the latest update on the soil moisture levels.
+//Params :
 //nodeId 	: String | The ID of the soil moisture node
 //status    : String | The latest status of the moisture level reported (on a scale of 0-100%)
 router.get('/updateMoistureLevel', urlencodedParser, function(req, res) {
@@ -556,7 +556,7 @@ router.get('/updateMoistureLevel', urlencodedParser, function(req, res) {
 				//Throw error if update failed
 				if(err)
 					throw err;
-				
+
 				//Check if sending a push notification is required. If status is not high or low, don't send a push notification
 				if(queryParams.status === "LOW" || queryParams.status === "HIGH")
 					//Find out which device to inform
@@ -570,19 +570,19 @@ router.get('/updateMoistureLevel', urlencodedParser, function(req, res) {
 						for(var index in result)
 							fcmIDs.push(result[index].fcmid);
 
-						//Send User notification when there is a change in the moisture level. 
+						//Send User notification when there is a change in the moisture level.
 						//Create the message payload
 						var notification = {
 							fcmregistrationtoken: fcmIDs,
 							payload: {
-								data: { 
+								data: {
 									status: queryParams.status ,
 									title: "Home status update",
 									body: (queryParams.status == "LOW") ? "Garden pump has been switched on" : "The garden was watered at " + updateTimeIST
 								}
 							}
 						};
-						
+
 						//Inform user of said changes in moisture level
 						sendNotification(notification, res);
 					});
@@ -609,10 +609,10 @@ router.get('/updateMoistureLevel', urlencodedParser, function(req, res) {
 // Params :
 // fcmregistrationtoken : The FCM ID where the push notification is to be sent
 // payload : The message to send
-// 
+//
 // Refer : https://firebase.google.com/docs/cloud-messaging/admin/send-messages for more information
-// 
-// Example payload 
+//
+// Example payload
 // {
 // 	"fcmregistrationtoken" : "",
 // 	"payload": {
@@ -639,7 +639,7 @@ function sendNotification(notification, res) {
 	    if(res !== null && res !== undefined)
 		    res.json({
 		    	message 	: "Successfully sent message",
-		    	receiver 	: notification.fcmregistrationtoken, 
+		    	receiver 	: notification.fcmregistrationtoken,
 		    	payload 	: notification.payload
 		    });
 	})
@@ -653,7 +653,7 @@ function sendNotification(notification, res) {
 }
 
 // ============================================================================= //
-// 
+//
 // Setup an end point to accept commands from the Samsung SmartThings hub/portal/application/system.
 // This server is never called from the user but always from Samsung SmartThings system.
 // 1. Refer [here] for details on the integration
@@ -667,16 +667,42 @@ router.post('/smartThingsConnect', urlencodedParser, function(req, res){
 	var jsonBody = req.body;
 
 	//Check what command was issued
-	//
-	// Check if event issued was PING
-	if(jsonBody.pingData)
-		if(jsonBody.pingData.challenge)
-			res.json({
-				statusCode: 0,
-				pingData: {
-					challenge: jsonBody.pingData.challenge
+	switch(jsonBody.lifecycle) {
+
+		// Check if event issued was PING
+		case "PING":
+			if(jsonBody.lifecycle)
+				if(jsonBody.pingData.challenge)
+					res.json({
+						statusCode: 0,
+						pingData: {
+							challenge: jsonBody.pingData.challenge
+						}
+				});
+				break;
+
+		// If Event was CONFIGURATION
+		// Refer : https://smartthings.developer.samsung.com/develop/guides/smartapps/configuration.html
+		case "CONFIGURATION":
+			if(jsonBody.configurationData)
+				switch(jsonBody.configurationData.phase) {
+
+					// Phase : INITIALZATION
+					case "INITIALIZE":
+						res.json({
+							configurationData: {
+								initialize: {
+									id: "5a043eeece31f7367996a795",
+									name: "Bedroom Lamp",
+									description: "The bedroom lamp on the table.",
+									firstPageId: "1"
+								}
+							}
+						});
+						break;
 				}
-			});
+			break;
+	}
 });
 
 
@@ -685,9 +711,9 @@ router.post('/smartThingsConnect', urlencodedParser, function(req, res){
 // Setup a service to accept voice commands from the user | This API is never called directly
 // Is always called from DialogFlow as a webhook to a user query posted and identified to be from
 // Elsa application.
-// 
+//
 // Sample body of data that will always be pushed to the service is available at : https://dialogflow.com/docs/fulfillment#webhook-example
-// 
+//
 // Service response : In order to process the user command, dialogFlow needs certain response from the API to be able to serve the user
 // properly. For that, the response needs to be of the following format :
 // 1. speech			- 	String 	-	Response to the request.
@@ -721,7 +747,7 @@ router.post('/voiceAction', urlencodedParser, function(req, res){
  * @param  {[type]} assistant [description]
  * @return {[type]}           [description]
  *
- * Examples of JSON that will be received : 
+ * Examples of JSON that will be received :
  * 1. When turn off command is provided, but not the ID/Name : https://api.myjson.com/bins/o85yz
  */
  function lightsOff(assistant) {
@@ -759,9 +785,9 @@ router.post('/voiceAction', urlencodedParser, function(req, res){
 					//There is nothing to prompt the user. There's just one item that can be controlled. Directly control it
 					//and leave
 					var speechText = "Okay!";
-					//return response from DB 
+					//return response from DB
 					assistant.tell(speechText);
-				}); 
+				});
 				// else {
 				// 	//Only one item may be controlled, repond appropriately
 				// 	var speechText = "You may control the " + result[0].Description + " only.";
@@ -821,9 +847,9 @@ function lightsOn(assistant) {
 					//There is nothing to prompt the user. There's just one item that can be controlled. Directly control it
 					//and leave
 					var speechText = "Okay!";
-					//return response from DB 
+					//return response from DB
 					assistant.tell(speechText);
-				}); 
+				});
 				// else {
 				// 	//Only one item may be controlled, repond appropriately
 				// 	var speechText = "You may control the " + result[0].Description + " only.";
@@ -853,7 +879,7 @@ function lightsOn(assistant) {
 function lightName(assistant) {
 	//Context will be received if the name was received after some commands
 	const idClicked = assistant.getContextArgument('actions_intent_option', 'OPTION').value;
-	var incomingContext = (assistant.getContext(TURNOFF_CONTEXT.toLowerCase()) !== undefined 
+	var incomingContext = (assistant.getContext(TURNOFF_CONTEXT.toLowerCase()) !== undefined
 			? assistant.getContext(TURNOFF_CONTEXT.toLowerCase())
 			: assistant.getContext(TURNON_CONTEXT.toLowerCase()));
 	if(idClicked != undefined && incomingContext != undefined) {
@@ -881,7 +907,7 @@ function lightName(assistant) {
 		//There is nothing to prompt the user. The user has told the node that is to be controlled. Directly control it
 		//and leave
 		var speechText = "Okay!";
-		//return response from DB 
+		//return response from DB
 		assistant.tell(speechText);
 	}
 }
@@ -899,15 +925,15 @@ function userHelp(assistant) {
  * The method will be exeucted when the user wants to retrieve a list of all nodes that s/he can control
  * @param  {[type]} assistant [description]
  * @return {[type]}           [description]
- * Example of JSON that will be received by the service : 
+ * Example of JSON that will be received by the service :
  * 1. When invoked contextually (What are my options after another command) :  https://api.myjson.com/bins/d5qlv
  */
  function listAll(assistant) {
 
- 	//Context will be received only on this case | Because if the user asked to turn on or off something, 
+ 	//Context will be received only on this case | Because if the user asked to turn on or off something,
  	//and there was only one item, the flow would have ended on the previous command.
 	//We check for any incoming contexts now
-	var incomingContext = (assistant.getContext(TURNOFF_CONTEXT.toLowerCase()) !== null 
+	var incomingContext = (assistant.getContext(TURNOFF_CONTEXT.toLowerCase()) !== null
 			? assistant.getContext(TURNOFF_CONTEXT.toLowerCase())
 			: assistant.getContext(TURNON_CONTEXT.toLowerCase()));
 	if(incomingContext !== null && incomingContext !== undefined && incomingContext.name === TURNOFF_CONTEXT.toLowerCase()) {
@@ -941,7 +967,7 @@ function userHelp(assistant) {
 					//throw the error if found
 					if (err) throw err;
 
-					//based on whether we have more than a single item on the list or not, we can 
+					//based on whether we have more than a single item on the list or not, we can
 					//either present the user with a list or just a single item
 					if(result.length > 1) {
 						//Build a bulleted list of items that can be controlled
@@ -951,7 +977,7 @@ function userHelp(assistant) {
 						for(var index in result)
 							optionItems.push(assistant.buildOptionItem(result[index]._id.toString()).setTitle(result[index].Description));
 
-						//return response from DB 
+						//return response from DB
 						// assistant.setContext(incomingContext., 1, incomingContext.parameters);
 						assistant.askWithList(speechText, assistant.buildList('Tap on an item to control : ').addItems(optionItems));
 					} else {
