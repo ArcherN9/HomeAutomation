@@ -707,20 +707,17 @@ router.post('/smartThingsConnect', urlencodedParser, function(req, res){
 							configurationData: {
 								page: {
 									pageId: "1",
+									nextPageId: null,
 									name: "Turns on the lamp when switch is turned on",
 									sections: [{
 										settings:[{
-											capabilities: [
-												"switch"
-											],
-											permissions: [
-												"r",
-												"x"
-											]
+											type: 'DEVICE',
+											capabilities: [ "switch" ],
+											permissions: [ "r", "x" ],
+											required: true,
+											multiple: false
 										}]
-									}],
-									required: true,
-									multiple: false
+									}]
 								},
 							complete: true,
 							}
