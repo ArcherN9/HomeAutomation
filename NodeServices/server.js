@@ -12,6 +12,7 @@ var momentTimezone 			= require('moment-timezone');
 var moment 					= require('moment');
 var firebaseAdmin 			= require("firebase-admin");
 var request 				= require('request');
+
 const DialogflowApp 		= require('actions-on-google').DialogflowApp;
 var mongoClient 			= require('mongodb').MongoClient;
 var ObjectID	 			= require('mongodb').ObjectID;
@@ -651,83 +652,6 @@ function sendNotification(notification, res) {
 		    });
 	});
 }
-
-// ============================================================================= //
-//
-// Setup an end point to accept commands from the Samsung SmartThings hub/portal/application/system.
-// This server is never called from the user but always from Samsung SmartThings system.
-// 1. Refer [here] for details on the integration
-// 2. Refer  [https://smartthings.developer.samsung.com/develop/guides/smartapps/webhook-apps.html] for details on how this service has been made
-// 3. Refer all API docs from Samsung SmartThings here : https://smartthings.developer.samsung.com/develop/api-ref/smartapps-v1.html#operation/execute
-
-router.post('/smartThingsConnect', urlencodedParser, function(req, res){
-	console.log(new Date() + ":" + "Smart things event Received : " + JSON.stringify(req.body));
-
-	//Get body of message in a different object | Its easier this way
-	var jsonBody = req.body;
-
-	//Check what command was issued
-	switch(jsonBody.lifecycle) {
-
-		// Check if event issued was PING
-		case "PING":
-			if(jsonBody.lifecycle)
-				if(jsonBody.pingData.challenge)
-					res.json({
-						statusCode: 0,
-						pingData: {
-							challenge: jsonBody.pingData.challenge
-						}
-				});
-				break;
-
-		// If Event was CONFIGURATION
-		// Refer : https://smartthings.developer.samsung.com/develop/guides/smartapps/configuration.html
-		case "CONFIGURATION":
-			if(jsonBody.configurationData)
-				switch(jsonBody.configurationData.phase) {
-
-					// Phase : INITIALZATION
-					case "INITIALIZE":
-						res.json({
-							configurationData: {
-								initialize: {
-									id: "5a043eeece31f7367996a795",
-									name: "Bedroom Lamp",
-									description: "The bedroom lamp on the table.",
-									firstPageId: "1"
-								}
-							}
-						});
-						break;
-
-					// Phase : PAGE
-					case "PAGE":
-						res.json({
-							configurationData: {
-								page: {
-									pageId: "1",
-									nextPageId: null,
-									name: "Turns on the lamp when switch is turned on",
-									sections: [{
-										settings:[{
-											type: 'DEVICE',
-											capabilities: [ "switch" ],
-											permissions: [ "r", "x" ],
-											required: true,
-											multiple: false
-										}]
-									}]
-								},
-							complete: true,
-							}
-						});
-						break;
-				}
-			break;
-	}
-});
-
 
 // ============================================================================= //
 //
