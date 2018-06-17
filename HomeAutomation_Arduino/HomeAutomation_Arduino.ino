@@ -30,7 +30,7 @@ void setup() {
   pinMode(INPUTSOIL1, INPUT);
   //Turn off all relays at the beginning
   pinMode(RELAYSOIL1, INPUT);
-  pinMode(RELAYLAMP1, INPUT);
+  pinMode(RELAYLAMP1, OUTPUT);
   //Turn off the Soil sensor
   pinMode(SENSORSOIL, INPUT);
 
@@ -44,21 +44,17 @@ void loop() {
   if (Serial.available() > 0) {
     // read the incoming byte:
     String jsonString = Serial.readString();
+//    Serial.println(jsonString);
     const size_t bufferSize = JSON_OBJECT_SIZE(4) + 150;
     DynamicJsonBuffer jsonBuffer(bufferSize);
     JsonObject& root = jsonBuffer.parseObject(jsonString);
-    if (root.success()) {
       if (root["status"]) {
-        pinMode(RELAYLAMP1, OUTPUT);
-        digitalWrite(RELAYLAMP1, HIGH);
-        Serial.println("Relay On command was executed");
+        digitalWrite(RELAYLAMP1, LOW);
+//        Serial.println("Relay On command was executed");
       } else {
-        pinMode(RELAYLAMP1, INPUT);
-        Serial.println("Relay off command was executed");
+        digitalWrite(RELAYLAMP1, HIGH);
+//        Serial.println("Relay off command was executed");
       }
-    } else {
-      Serial.println("Either parsing failed, or required keys are missing");
-    }
   }
 
   //Check if adequate time has elapsed before trying to access soil moisture information
@@ -78,7 +74,7 @@ void loop() {
     //If new moisture data does not match previous, update the server
     if (intNew != intMoistureLevel) {
       //Log to console
-      Serial.println("New moisture level is " + String(intNew) + ". Last recorded was " + String(intMoistureLevel));
+//      Serial.println("New moisture level is " + String(intNew) + ". Last recorded was " + String(intMoistureLevel));
 
       //Send ESP DATA
       Serial.print("{\"status\":\"" + String(intNew) + "\"}");
@@ -87,7 +83,7 @@ void loop() {
       //If pump is turned on, water plants until they reach at least 800 value
       if(isPumpOn) {
         //Log to console
-        Serial.println("Water pump is running");
+//        Serial.println("Water pump is running");
   
         if(intMoistureLevel > 800) {
            //Turn off the relay | Switch off the pump just in case
