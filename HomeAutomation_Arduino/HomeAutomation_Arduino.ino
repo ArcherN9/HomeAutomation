@@ -45,7 +45,7 @@ void loop() {
     // read the incoming byte:
     String jsonString = Serial.readString();
 //    Serial.println(jsonString);
-    const size_t bufferSize = JSON_OBJECT_SIZE(4) + 150;
+    const size_t bufferSize = JSON_OBJECT_SIZE(1) + 20;
     DynamicJsonBuffer jsonBuffer(bufferSize);
     JsonObject& root = jsonBuffer.parseObject(jsonString);
       if (root["status"]) {
