@@ -1,29 +1,39 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <ArduinoJson.h>
 
-const char* ssid = "<WiFi SSID Here>";
-const char* password = "<WiFi Password here>";
+const char* ssid = "DLNA2G";
+const char* password = "January2018#";
+
+#define RELAY1 2
 
 // Set web server port number to 80
 WiFiServer server(80);
 
-const String lampNodeId = "<A unique ID for this ESP>";
+//AA Series for standard Switches
+const String lampNodeId = "AA02";
+
+//Bed lamp ESP does not interact through an arduino. 
+//loop method will be modified to send high / low signals
+//through GPIO pins
 
 // Variable to store the HTTP request
 String header;
 
 void setup() {
-  // put your setup code here, to run once:
+  // put your setup code here, to run once:o
   Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);  //Connect to the WiFi network
   while (WiFi.status() != WL_CONNECTED) {  //Wait for connection
     delay(1000);
-    //Serial.println("Trying to connect to WiFi network");
+//    Serial.println("Trying to connect to WiFi network");
   }
 //  Serial.print("Acquired IP address: ");
 //  Serial.println(WiFi.localIP());  //Print the local IP
+//  Serial.println(WiFi.macAddress()); //Print WiFi Mac address
   server.begin();
+
+  //Set mode of GPIO Pin 2 to out
+  pinMode(RELAY1, INPUT);
 }
 
 void loop() {
@@ -57,10 +67,11 @@ void loop() {
             
             // Informs the Arduino of an action taken by a REST call
             if (header.indexOf("GET /action?status=on") >= 0) {
-              Serial.print("{\"status\":\"true\"}");
+              pinMode(RELAY1, OUTPUT);
+              digitalWrite(RELAY1, HIGH);
               client.println("{\"success\": true, \"status\": true}");
             } else if(header.indexOf("GET /action?status=off") >= 0) {
-              Serial.print("{\"status\":\"false\"}");
+              pinMode(RELAY1, INPUT);
               client.println("{\"success\": true, \"status\": false}");
             } else if(header.indexOf("GET /discover") >= 0) {
               // Send ID of this node to whoever is requesting
