@@ -1,6 +1,7 @@
 package android_home_hub.daksh.com.homeautomation_hub.Main
 
 import android_home_hub.daksh.com.homeautomation_hub.Config.RetroFit
+import android_home_hub.daksh.com.homeautomation_hub.HomeApplication
 import android_home_hub.daksh.com.homeautomation_hub.Main.Model.ModelDevice
 import retrofit2.Call
 import retrofit2.http.*
@@ -19,6 +20,8 @@ object RFDeviceInteraction {
     internal fun server(strServerUrl: String?): RFDeviceInteraction {
         RetroFit.reconfigureServer(strBaseUrl = strServerUrl)
 
+        //Remake API Interface
+        apiInterface = RetroFit.retrofitClient.create(APIInterface::class.java)
         return this@RFDeviceInteraction
     }
 

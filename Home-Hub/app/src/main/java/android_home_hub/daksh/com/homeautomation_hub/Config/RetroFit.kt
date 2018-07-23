@@ -1,6 +1,7 @@
 package android_home_hub.daksh.com.homeautomation_hub.Config
 
 import android.support.annotation.NonNull
+import android_home_hub.daksh.com.homeautomation_hub.HomeApplication
 import okhttp3.*
 import okhttp3.internal.http2.Http2
 import okhttp3.logging.HttpLoggingInterceptor
@@ -42,6 +43,8 @@ object RetroFit {
                         .client(okHttpClient)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build()
+
+                HomeApplication.log("Server has been reconfigured with URL : ${retrofitClient.baseUrl()}")
             }
         }
     }

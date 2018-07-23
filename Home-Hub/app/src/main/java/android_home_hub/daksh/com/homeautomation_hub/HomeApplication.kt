@@ -18,9 +18,7 @@ class HomeApplication: Application() {
         initialize()
     }
 
-    private fun initializeDB() {
-        AppDatabase.getInstance(this@HomeApplication)
-    }
+    private fun initializeDB() = AppDatabase.getInstance(this@HomeApplication)
 
     private fun initialize(): PubNub? {
         //Setup Pubnub
@@ -30,7 +28,7 @@ class HomeApplication: Application() {
 
         //Using the configuration create a new PubNub object
         pubnub = PubNub(pnConfiguration)
-        pubnub.addListener(PubNubHandler())
+        pubnub.addListener(PubNubHandler(this@HomeApplication))
         return pubnub
     }
 
@@ -48,10 +46,10 @@ class HomeApplication: Application() {
 
         //TAGs For logging
         val TAG: String = HomeApplication::class.java.simpleName
-        val TAG_START: String = ">>>>>>>>>"
-        val TAG_END: String = "<<<<<<<<<"
+        val TAG_START: String = ">>>>>>>>>>>>>>>>>>"
+        val TAG_END: String = "<<<<<<<<<<<<<<<<<<"
 
         //Log Thread
-        fun log(operation: String) = Log.d(TAG, "$TAG_START Operation \"$operation\" executing on Thread ${Thread.currentThread().id} $TAG_END")
+        fun log(operation: String) = Log.d(TAG, "$TAG_START $operation. Executing on Thread ${Thread.currentThread().id} $TAG_END")
     }
 }

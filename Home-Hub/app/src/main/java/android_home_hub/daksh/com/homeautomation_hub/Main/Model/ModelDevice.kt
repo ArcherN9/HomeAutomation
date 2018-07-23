@@ -7,4 +7,6 @@ class ModelDevice {
     var status: Boolean = false
 
     var _id: Long? = 1
+
+    var position: Int = 0
 }

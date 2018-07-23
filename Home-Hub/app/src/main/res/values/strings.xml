@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">HomeAutomation-Hub</string>
+
+    <!-- Channels -->
+    <string name="Home">Home</string>
+    <string name="Home.LivingRoom">Home/LivingRoom</string>
 </resources>
