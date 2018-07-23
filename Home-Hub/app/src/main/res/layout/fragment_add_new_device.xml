@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/edDeviceIp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="Enter the device IP address"
+        android:inputType="textPersonName"
+        android:paddingTop="15dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edDeviceName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint='Name your device. eg: "Table Lamp"'
+        android:inputType="textCapWords|textPersonName"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/edDeviceIp"
+        app:layout_constraintStart_toStartOf="@+id/edDeviceIp"
+        app:layout_constraintTop_toBottomOf="@+id/edDeviceIp" />
+
+    <EditText
+        android:id="@+id/edDeviceLocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="Which room is the device in?"
+        android:inputType="textCapWords|textPersonName"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/edDeviceName"
+        app:layout_constraintStart_toStartOf="@+id/edDeviceName"
+        app:layout_constraintTop_toBottomOf="@+id/edDeviceName" />
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Create"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spnDeviceType" />
+
+    <Spinner
+        android:id="@+id/spnDeviceType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/edDeviceLocation"
+        app:layout_constraintStart_toStartOf="@+id/edDeviceLocation"
+        app:layout_constraintTop_toBottomOf="@+id/edDeviceLocation" />
+
+</android.support.constraint.ConstraintLayout>
