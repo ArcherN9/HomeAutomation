@@ -1,7 +1,7 @@
 #include <ESP8266WiFi.h>
 
-const char* ssid = "DLNA2G";
-const char* password = "January2018#";
+const char* ssid = "****";
+const char* password = "****";
 
 #define RELAY1 2
 
@@ -25,11 +25,11 @@ void setup() {
   WiFi.begin(ssid, password);  //Connect to the WiFi network
   while (WiFi.status() != WL_CONNECTED) {  //Wait for connection
     delay(1000);
-//    Serial.println("Trying to connect to WiFi network");
+    Serial.println("Trying to connect to WiFi network");
   }
-//  Serial.print("Acquired IP address: ");
-//  Serial.println(WiFi.localIP());  //Print the local IP
-//  Serial.println(WiFi.macAddress()); //Print WiFi Mac address
+  Serial.print("Acquired IP address: ");
+  Serial.println(WiFi.localIP());  //Print the local IP
+  Serial.println(WiFi.macAddress()); //Print WiFi Mac address
   server.begin();
 
   //Set mode of GPIO Pin 2 to out
@@ -39,7 +39,7 @@ void setup() {
 void loop() {
   WiFiClient client = server.available();   // Listen for incoming clients
   if (client) {                             // If a new client connects,
-//    Serial.println("New Client has connected");          // print a message out in the serial port
+    Serial.println("New Client has connected");          // print a message out in the serial port
     String currentLine = "";                // make a String to hold incoming data from the client
     while (client.connected()) {            // loop while the client's connected
       if (client.available()) {             // if there's bytes to read from the client,
@@ -66,16 +66,16 @@ void loop() {
             }
             
             // Informs the Arduino of an action taken by a REST call
-            if (header.indexOf("GET /action?status=on") >= 0) {
+            if (header.indexOf("GET /action?status=true") >= 0) {
               pinMode(RELAY1, OUTPUT);
               digitalWrite(RELAY1, HIGH);
-              client.println("{\"success\": true, \"status\": true}");
-            } else if(header.indexOf("GET /action?status=off") >= 0) {
+              client.println("{\"success\": true, \"status\": true, \"_id\":\"" + lampNodeId + "\"}");
+            } else if(header.indexOf("GET /action?status=false") >= 0) {
               pinMode(RELAY1, INPUT);
-              client.println("{\"success\": true, \"status\": false}");
+              client.println("{\"success\": true, \"status\": false, \"_id\":\"" + lampNodeId + "\"}");
             } else if(header.indexOf("GET /discover") >= 0) {
               // Send ID of this node to whoever is requesting
-              client.println("[{\"nodeId\" : \"" + lampNodeId + "\", \"endpoints\" : [\"action\"], \"parameters\": [\"status\"], \"values\": [\"on\", \"off\"]}]");
+              client.println("[{\"nodeId\" : \"" + lampNodeId + "\", \"endpoints\" : [\"action\"], \"parameters\": [\"status\"], \"values\": [\"true\", \"false\"]}]");
             }
             
             // The HTTP response ends with another blank line
@@ -96,6 +96,17 @@ void loop() {
     client.stop();
 //    Serial.println("Client disconnected.");
 //    Serial.println("");
+  }
+
+  if(WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);  //Connect to the WiFi network
+    while (WiFi.status() != WL_CONNECTED) {  //Wait for connection
+      delay(1000);
+      Serial.println("Trying to connect to WiFi network");
+    }
+    Serial.print("Acquired IP address: ");
+    Serial.println(WiFi.localIP());  //Print the local IP
+    Serial.println(WiFi.macAddress()); //Print WiFi Mac address
   }
 }
 
