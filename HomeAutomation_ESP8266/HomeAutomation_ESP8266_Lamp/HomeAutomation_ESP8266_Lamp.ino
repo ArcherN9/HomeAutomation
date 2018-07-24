@@ -1,7 +1,7 @@
 #include <ESP8266WiFi.h>
 
-const char* ssid = "DLNA2G";
-const char* password = "January2018#";
+const char* ssid = "***";
+const char* password = "*****";
 
 // Set web server port number to 80
 WiFiServer server(80);
@@ -56,15 +56,15 @@ void loop() {
             }
             
             // Informs the Arduino of an action taken by a REST call
-            if (header.indexOf("GET /action?status=on") >= 0) {
+            if (header.indexOf("GET /action?status=true") >= 0) {
               Serial.print("{\"status\":\"true\"}");
-              client.println("{\"success\": true, \"status\": true}");
-            } else if(header.indexOf("GET /action?status=off") >= 0) {
+              client.println("{\"success\": true, \"status\": true, \"_id\":\""+ lampNodeId + "\"}");
+            } else if(header.indexOf("GET /action?status=false") >= 0) {
               Serial.print("{\"status\":\"false\"}");
-              client.println("{\"success\": true, \"status\": false}");
+              client.println("{\"success\": true, \"status\": false, \"_id\":\""+ lampNodeId + "\"}");
             } else if(header.indexOf("GET /discover") >= 0) {
               // Send ID of this node to whoever is requesting
-              client.println("[{\"nodeId\" : \"" + lampNodeId + "\", \"endpoints\" : [\"action\"], \"parameters\": [\"status\"], \"values\": [\"on\", \"off\"]}]");
+              client.println("[{\"nodeId\" : \"" + lampNodeId + "\", \"endpoints\" : [\"action\"], \"parameters\": [\"status\"], \"values\": [\"true\", \"false\"]}]");
             }
             
             // The HTTP response ends with another blank line
@@ -86,6 +86,17 @@ void loop() {
 //    Serial.println("Client disconnected.");
 //    Serial.println("");
   }
+
+  if(WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);  //Connect to the WiFi network
+    while (WiFi.status() != WL_CONNECTED) {  //Wait for connection
+      delay(1000);
+  //    Serial.println("Trying to connect to WiFi network");
+    }
+  }
+//  Serial.print("Acquired IP address: ");
+//  Serial.println(WiFi.localIP());  //Print the local IP
+//  Serial.println(WiFi.macAddress());
 }
 
 
