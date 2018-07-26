@@ -10,7 +10,6 @@ import android.provider.Settings
 import android.support.annotation.RequiresApi
 import android.util.Log
 import com.daksh.homeautomation.FCM.Model.FCMModel
-import com.daksh.homeautomation.RetroFit
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.iid.FirebaseInstanceIdService
 import retrofit2.Call
@@ -100,7 +99,7 @@ class FCMRegistrationService: FirebaseInstanceIdService(), Callback<FCMModel> {
          */
         private fun init(): APIInterface? {
             return if(apiInterface == null) {
-                apiInterface = RetroFit.getRetrofit().create(APIInterface::class.java)
+//                apiInterface = RetroFit.getRetrofit().create(APIInterface::class.java)
                 apiInterface
             } else
                 apiInterface

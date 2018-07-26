@@ -57,18 +57,6 @@
             android:visibility="gone"
             android:layout_centerVertical="true"/>
 
-        <!--<ProgressBar-->
-            <!--android:id="@+id/nodeProgress"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--style="?android:attr/progressBarStyle"-->
-            <!--android:padding="10dp"-->
-            <!--android:visibility="invisible"-->
-            <!--android:layout_alignTop="@id/nodeToggle"-->
-            <!--android:layout_alignBottom="@id/nodeToggle"-->
-            <!--android:layout_alignStart="@id/nodeToggle"-->
-            <!--android:layout_alignEnd="@id/nodeToggle"/>-->
-
     </RelativeLayout>
 
     <View

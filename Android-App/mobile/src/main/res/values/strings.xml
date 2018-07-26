@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Elsa</string>
+
+    <!-- PubNub channels and its uses -->
+
+    <!-- This channel is used to perform retrieval functions on the devices only -->
+    <!-- For ex : To get the list of home devices / to retrieve the status of a devie -->
+    <string name="home_devices">Home/Devices</string>
+
+    <!-- This channel is used to perform actions on the devices -->
+    <!-- For ex : when a light is switched on, the message is broad casted on this channel -->
+    <string name="Home.operations">Home/Operations</string>
+    <string name="home.devices.actions">Home/Devices/Actions</string>
 </resources>

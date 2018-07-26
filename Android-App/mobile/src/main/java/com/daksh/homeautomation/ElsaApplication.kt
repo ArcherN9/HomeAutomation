@@ -1,24 +1,51 @@
 package com.daksh.homeautomation
 
 import android.app.Application
-import android.content.Context
-import com.daksh.homeautomation.MainActivity.Model.MyObjectBox
-import io.objectbox.BoxStore
-import io.objectbox.DebugFlags
+import android.util.Log
+import com.pubnub.api.PNConfiguration
+import com.pubnub.api.PubNub
 
 class ElsaApplication: Application() {
 
-    //The box store. This is used application wide to read / write from the DB
-    internal lateinit var objectBox: BoxStore
+    // the Pubnub instance
+    lateinit var pubnub: PubNub
 
     override fun onCreate() {
         super.onCreate()
 
-        //Create the objectBox instance
-        objectBox = MyObjectBox
-                .builder()
-                .androidContext(this@ElsaApplication)
-                .debugFlags(DebugFlags.LOG_QUERIES)
-                .build()
+        initialize()
+    }
+
+    private fun initialize(): PubNub? {
+        //Setup Pubnub
+        val pnConfiguration = PNConfiguration()
+        pnConfiguration.subscribeKey = getString(R.string.Key_Pubnub_subscriber)
+        pnConfiguration.publishKey = getString(R.string.Key_Pubnub_publisher)
+
+        //Using the configuration create a new PubNub object
+        pubnub = PubNub(pnConfiguration)
+        pubnub.addListener(PubNubHandler(this@ElsaApplication))
+        return pubnub
+    }
+
+    /**
+     * returns the pubnub instance
+     */
+    fun getPubNub(): PubNub? {
+        return if(::pubnub.isInitialized)
+            pubnub
+        else
+            initialize()
+    }
+
+    companion object {
+
+        //TAGs For logging
+        val TAG: String = ElsaApplication::class.java.simpleName
+        val TAG_START: String = ">>>>>>>>>>>>>>>>>>"
+        val TAG_END: String = "<<<<<<<<<<<<<<<<<<"
+
+        //Log Thread
+        fun log(operation: String) = Log.d(TAG, "$TAG_START $operation. Executing on Thread ${Thread.currentThread().id} $TAG_END")
     }
 }

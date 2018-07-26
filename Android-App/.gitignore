@@ -8,4 +8,4 @@
 /captures
 .externalNativeBuild
 .idea/
-../NodeServices
+/mobile/src/main/res/values/APIKeys.xml

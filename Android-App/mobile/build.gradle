@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.objectbox'
 
 android {
     compileSdkVersion 27
@@ -63,17 +62,15 @@ dependencies {
     //import JWT token library
     implementation 'io.jsonwebtoken:jjwt:0.9.0'
 
-    //Import Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-
-    //ObjectBox
-    implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
-    kapt "io.objectbox:objectbox-processor:$objectboxVersion"
-
     //Circular dial
     implementation 'com.github.krtkush:LinearTimer:v2.1.1'
+
+    //Pubnub
+    implementation 'com.pubnub:pubnub-gson:4.19.0'
+
+    //Rooms
+    implementation "android.arch.persistence.room:runtime:$androidLibVersion"
+    kapt "android.arch.persistence.room:compiler:$androidLibVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'

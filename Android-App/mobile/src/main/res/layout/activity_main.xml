@@ -17,26 +17,4 @@
         android:layout_height="match_parent"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"/>
 
-    <!--<TextView-->
-        <!--android:id="@+id/livingRoomLamp"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Corner Lamp"-->
-        <!--android:textSize="16sp"-->
-        <!--android:paddingStart="15dp"-->
-        <!--android:paddingTop="15dp"-->
-        <!--android:paddingBottom="15dp"-->
-        <!--android:paddingEnd="15dp"-->
-        <!--android:background="?attr/selectableItemBackground"/>-->
-
-    <!--<Switch-->
-        <!--android:id="@+id/livingRoomLampToggle"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignBaseline="@id/livingRoomLamp"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:layout_marginEnd="15dp"-->
-        <!--android:focusable="false"-->
-        <!--android:clickable="false"/>-->
-
 </RelativeLayout>
