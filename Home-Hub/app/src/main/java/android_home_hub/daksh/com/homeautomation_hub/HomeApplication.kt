@@ -23,8 +23,8 @@ class HomeApplication: Application() {
     private fun initialize(): PubNub? {
         //Setup Pubnub
         val pnConfiguration = PNConfiguration()
-        pnConfiguration.subscribeKey = "sub-c-71e45c9a-71fc-11e8-b452-f6257dc827e2"
-        pnConfiguration.publishKey = "pub-c-22b06265-0689-408c-8d6b-3532ddc609d3"
+        pnConfiguration.subscribeKey = getString(R.string.Key_Pubnub_subscriber)
+        pnConfiguration.publishKey = getString(R.string.Key_Pubnub_publisher)
 
         //Using the configuration create a new PubNub object
         pubnub = PubNub(pnConfiguration)

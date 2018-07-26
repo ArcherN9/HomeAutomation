@@ -76,11 +76,11 @@ class PresenterMain(private var view: ContractMain.View): ContractMain.Presenter
 
     override fun onSwitchExecuted(isChecked: Boolean, intPosition: Int, nodeId: Long?) {
         nodeId?.let {
-            val call: Call<ModelDevice> = RFDeviceInteraction
+            val call: Call<ModelDevice>? = RFDeviceInteraction
                     .server(recyclerViewAdapter?.getAdapterItemById(it)?.deviceIp)
                     .apiInterface
-                    .flip(if(isChecked) "yes" else "no", nodeId)
-            call.enqueue(this@PresenterMain)
+                    ?.flip(isChecked, nodeId)
+            call?.enqueue(this@PresenterMain)
         }
     }
 

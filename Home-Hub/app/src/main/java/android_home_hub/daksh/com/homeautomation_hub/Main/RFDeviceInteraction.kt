@@ -12,7 +12,7 @@ object RFDeviceInteraction {
      * An API interface used in the main activity. It comprises of all services limited to the
      * Main Activity.
      */
-    internal var apiInterface: APIInterface = RetroFit.retrofitClient.create(APIInterface::class.java)
+    internal var apiInterface: APIInterface? = null
 
     /**
      * The method reconfigures Retrofit with a new server URL
@@ -34,7 +34,7 @@ object RFDeviceInteraction {
         @GET("/action")
         fun flip(
                 //Queries are key=value pairs sent in the URL.
-                @Query("status") strAction: String,
+                @Query("status") strAction: Boolean,
                 @Query("Id") strId: Long
         ): Call<ModelDevice>
     }

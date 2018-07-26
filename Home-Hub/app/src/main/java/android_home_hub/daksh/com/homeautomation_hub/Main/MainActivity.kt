@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import android.os.Message
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -21,7 +20,6 @@ import com.pubnub.api.callbacks.PNCallback
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.reflect.Type
 import java.util.*
 
 class MainActivity : AppCompatActivity(), ContractMain.View {

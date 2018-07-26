@@ -4,4 +4,5 @@
     <!-- Channels -->
     <string name="Home">Home</string>
     <string name="Home.LivingRoom">Home/LivingRoom</string>
+    <string name="Home_operations">Home/Operations</string>
 </resources>

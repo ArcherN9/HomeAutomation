@@ -9,4 +9,4 @@
 /build
 /captures
 .externalNativeBuild
-../.idea/
+/app/src/main/res/values/APIKeys.xml
