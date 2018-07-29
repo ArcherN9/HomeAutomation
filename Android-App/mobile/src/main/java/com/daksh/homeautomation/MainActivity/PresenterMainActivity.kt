@@ -2,18 +2,15 @@ package com.daksh.homeautomation.MainActivity
 
 import android.os.Handler
 import android.os.HandlerThread
-import android.widget.Toast
+import com.daksh.homeautomation.ElsaApplication
 import com.daksh.homeautomation.R
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.hcl.daksh.android_poc_camp.Dashboard.ContractMain
 import com.hcl.daksh.android_poc_camp.Login.DB.EntityDevices
 import com.pubnub.api.callbacks.PNCallback
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
-import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.net.ConnectException
 
 class PresenterMainActivity(private var view: ContractMain.View) : ContractMain.Presenter {
 
@@ -42,16 +39,6 @@ class PresenterMainActivity(private var view: ContractMain.View) : ContractMain.
     }
 
     /**
-     * Returns a json object to request for all devices in the DB
-     */
-    private fun CreateJsonDeviceSwitch(nodeId: Long?, status: Boolean):JSONObject {
-        val jsonObject = JSONObject()
-        jsonObject.put("_id", nodeId)
-        jsonObject.put("status", status)
-        return jsonObject
-    }
-
-    /**
      * Connects to the micro service and gets the updated list of Nodes
      */
     override fun loadList() {
@@ -66,25 +53,19 @@ class PresenterMainActivity(private var view: ContractMain.View) : ContractMain.
             }
     }
 
-    override fun toggleSwitch(status: Boolean, nodeId: Long?) {
-
-        //Send a broadcast to get device list
+    override fun toggleSwitch(changedEntity: EntityDevices) {
+        //Send a broadcast to the home hub and inform to switch the switch
+        val type = object: TypeToken<EntityDevices>(){}.type
         view.getElsaApplication().pubnub.publish()
-                .message(CreateJsonDeviceSwitch(nodeId, status))
+                .message(Gson().toJson(changedEntity, type))
                 .channel(view.getAppResources().getString(R.string.home_devices_actions))
                 .async(object: PNCallback<PNPublishResult>() {
 
                     override fun onResponse(result: PNPublishResult?, status: PNStatus?) {
-//                        //Check if the model from JSON is already present in our ObjectBox
-//                        val device = view.getDeviceDB().getDeviceById(response.body()?._id)
-//
-//                        //If it is, iterate over it and update the ID in the JSON body so that
-//                        //proper updation can be done in ObjectBox
-//                        device?._id?.apply {
-//                            device.isDeviceSwitchedOn = response.body()?.isDeviceSwitchedOn!!
-//                            mHandler.post { view.getDeviceDB().updateDevice(device = device) }
-//                        }
+                        ElsaApplication.log(status.toString())
                     }
                 })
     }
+
+    /** *********************** Extension functions *********************** */
 }

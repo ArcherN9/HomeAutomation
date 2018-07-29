@@ -3,15 +3,16 @@ package com.hcl.daksh.android_poc_camp.Login.DB
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import android.support.annotation.NonNull
+import android.support.annotation.Nullable
+import com.google.gson.annotations.SerializedName
 
 @Entity
-class EntityDevices(@PrimaryKey(autoGenerate = true) var _id: Long?,
-                    @ColumnInfo() var deviceName: String,
-                    @ColumnInfo() var deviceIp: String,
-                    @ColumnInfo() var deviceLocation: String,
-                    @ColumnInfo() var deviceType: Int,
-                    @ColumnInfo() var isDeviceSwitchedOn: Boolean) {
+class EntityDevices(@PrimaryKey() var _id: String,
+                    @SerializedName("deviceName") @Nullable @ColumnInfo() var deviceName: String? = null,
+                    @SerializedName("deviceIp") @Nullable @ColumnInfo() var deviceIp: String? = null,
+                    @SerializedName("deviceLocation") @Nullable @ColumnInfo() var deviceLocation: String? = null,
+                    @SerializedName("deviceType") @Nullable @ColumnInfo() var deviceType: Int? = null,
+                    @SerializedName("isDeviceSwitchedOn") @Nullable @ColumnInfo() var isDeviceSwitchedOn: Boolean? = null) {
 
     override fun toString(): String = "{ _id: $_id, deviceName : $deviceName, deviceIp: $deviceIp, deviceType: $deviceType, deviceLocation: $deviceLocation, isDeviceSwitchedOn: $isDeviceSwitchedOn}"
 

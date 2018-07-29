@@ -8,6 +8,7 @@ import android.os.HandlerThread
 import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import com.daksh.homeautomation.AppDatabase
 import com.daksh.homeautomation.ElsaApplication
 import com.daksh.homeautomation.R
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity(), ContractMain.View {
         //Instantiate the adapter
         nodeRecyclerViewAdapter = NodeListRecyclerViewAdapter()
         //Attach the adapter to recyclerView
-        nodeRecyclerView.adapter = nodeRecyclerViewAdapter
+        deviceRecyclerView.adapter = nodeRecyclerViewAdapter
         //pass the interaction listener
         nodeRecyclerViewAdapter?.setInteractionlistener(presenter = presenter)
 
@@ -60,12 +61,20 @@ class MainActivity : AppCompatActivity(), ContractMain.View {
 
     override fun onResume() {
         super.onResume()
-
-        //Start refreshing the page
-        swipeRefreshLayout.isRefreshing = true
-
         //Get all nodes from the server
         presenter.loadList()
+    }
+
+    /**
+     * Displays the empty control on the screen
+     */
+    override fun showEmptyControl(show: Boolean) {
+        mMainHandler?.post {
+            if(show)
+                txEmptyMessage.visibility = View.VISIBLE
+            else
+                txEmptyMessage.visibility = View.GONE
+        }
     }
 
     /**
@@ -73,10 +82,20 @@ class MainActivity : AppCompatActivity(), ContractMain.View {
      * fetches the updated presenter list and returns it in this listener
      */
     override fun showDeviceList(nodeList: MutableList<EntityDevices>?) {
-        mMainHandler?.post {
-            //Set the node list
-            nodeRecyclerViewAdapter?.setNodeList(nodeList)
-            nodeRecyclerViewAdapter?.notifyDataSetChanged()
+        // If the item list is empty, show a help card on the main activity |
+        // Please add items to the list
+        nodeList?.apply {
+            if(this.isEmpty())
+            //Tell the user to add a few items to the screen
+                showEmptyControl(true)
+            else {
+                showEmptyControl(false)
+                mMainHandler?.post {
+                    //Set the node list
+                    nodeRecyclerViewAdapter?.setNodeList(nodeList)
+                    nodeRecyclerViewAdapter?.notifyDataSetChanged()
+                }
+            }
         }
     }
 

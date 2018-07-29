@@ -67,7 +67,9 @@ class NodeListRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
                 itemView.nodeToggle.visibility = View.VISIBLE
                 itemView.nodeStatus.visibility = View.GONE
                 //Set the status of the node
-                itemView.nodeToggle.isChecked = nodeList[intPosition].isDeviceSwitchedOn
+                nodeList[intPosition].isDeviceSwitchedOn?.apply {
+                    itemView.nodeToggle.isChecked = this
+                }
             } else if(nodeList?.get(intPosition)?.deviceType == 2) {
 
                 //Hide the switch, its not required
@@ -82,7 +84,12 @@ class NodeListRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
                 itemView.nodeToggle.isChecked = !itemView.nodeToggle.isChecked
 
                 //Inform the activity to pass on request to the controller to fetch updated data on the switch
-                presenter?.toggleSwitch(itemView.nodeToggle.isChecked, nodeList?.get(intPosition)?._id)
+                //Create a new object of entity and pass to toggle switch objct | This is done so that only the changed
+                //items are pushed to the hub and not everything else
+                nodeList?.let {
+                    val changedEntity = EntityDevices(_id = it[intPosition]._id, isDeviceSwitchedOn = itemView.nodeToggle.isChecked)
+                    presenter?.toggleSwitch(changedEntity)
+                }
             }
         }
     }

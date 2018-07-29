@@ -10,5 +10,5 @@
     <!-- This channel is used to perform actions on the devices -->
     <!-- For ex : when a light is switched on, the message is broad casted on this channel -->
     <string name="Home.operations">Home/Operations</string>
-    <string name="home.devices.actions">Home/Devices/Actions</string>
+    <string name="home_devices_actions">Home/Devices/Actions</string>
 </resources>

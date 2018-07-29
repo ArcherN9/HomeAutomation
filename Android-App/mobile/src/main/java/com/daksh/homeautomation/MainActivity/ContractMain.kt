@@ -19,12 +19,15 @@ interface ContractMain {
 
         //Returns the class that extends Application
         fun getElsaApplication(): ElsaApplication
+
+        // Displays a helper on the screen
+        fun showEmptyControl(show: Boolean)
     }
 
     interface Presenter : BasePresenter {
 
         //Toggle the switch
-        fun toggleSwitch(isSwichedOn: Boolean, nodeId: Long?)
+        fun toggleSwitch(changedEntity: EntityDevices)
 
         // loads the device list
         fun loadList()
