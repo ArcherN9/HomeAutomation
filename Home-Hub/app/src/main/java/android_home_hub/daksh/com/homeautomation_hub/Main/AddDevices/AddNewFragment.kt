@@ -47,6 +47,7 @@ class AddNewFragment: DialogFragment(), ContractAddDevices.View {
         //attach tap listener
         btnSubmit.setOnClickListener { _ ->
             presenter.registerDevice(
+                    id = edDeviceId.string(),
                     ipAddress = edDeviceIp.string(),
                     deviceName = edDeviceName.string(),
                     isDeviceSwitchedOn = false,

@@ -28,6 +28,6 @@ interface ContractMain {
         fun loadList()
 
         // Informs the presenter that a switch has been flipped by the user
-        fun onSwitchExecuted(isChecked: Boolean, intPosition: Int, nodeId: Long?)
+        fun onSwitchExecuted(isChecked: Boolean, nodeId: String?)
     }
 }

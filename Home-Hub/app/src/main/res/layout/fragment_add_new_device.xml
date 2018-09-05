@@ -1,24 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/edDeviceId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Enter the device ID"
+        android:inputType="textPersonName"
+        android:paddingTop="25dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:textSize="14sp"
+        tools:layout_editor_absoluteX="25dp"
+        tools:layout_editor_absoluteY="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/edDeviceIp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="25dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
         android:ems="10"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:hint="Enter the device IP address"
         android:inputType="textPersonName"
         android:paddingTop="15dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/edDeviceId"
+        app:layout_constraintStart_toStartOf="@+id/edDeviceId"
+        app:layout_constraintTop_toBottomOf="@+id/edDeviceId"/>
 
     <EditText
         android:id="@+id/edDeviceName"
@@ -26,6 +44,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:ems="10"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:hint='Name your device. eg: "Table Lamp"'
         android:inputType="textCapWords|textPersonName"
         android:textSize="14sp"
@@ -39,6 +59,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:ems="10"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:hint="Which room is the device in?"
         android:inputType="textCapWords|textPersonName"
         android:textSize="14sp"
@@ -52,6 +74,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Create"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spnDeviceType" />
@@ -61,6 +85,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="@+id/edDeviceLocation"
         app:layout_constraintStart_toStartOf="@+id/edDeviceLocation"
         app:layout_constraintTop_toBottomOf="@+id/edDeviceLocation" />

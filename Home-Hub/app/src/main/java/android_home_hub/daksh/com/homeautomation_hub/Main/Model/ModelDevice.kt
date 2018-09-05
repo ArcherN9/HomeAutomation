@@ -6,7 +6,7 @@ class ModelDevice {
 
     var status: Boolean = false
 
-    var _id: Long? = 1
+    var _id: String? = null
 
     var position: Int = 0
 }

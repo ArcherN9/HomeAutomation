@@ -30,7 +30,7 @@ class DeviceRecyclerViewAdapter(private var presenter: ContractMain.Presenter) :
     /**
      * Returns an adapter element by ID
      */
-    internal fun getAdapterItemById(itemId: Long): EntityDevices? {
+    internal fun getAdapterItemById(itemId: String): EntityDevices? {
         nodeList?.let {
             for(listItem in it)
                 if(listItem._id == itemId)
@@ -43,7 +43,7 @@ class DeviceRecyclerViewAdapter(private var presenter: ContractMain.Presenter) :
     /**
      * Returns the position of the element
      */
-    internal fun getAdapterPositionById(itemId: Long): Int {
+    internal fun getAdapterPositionById(itemId: String): Int {
         nodeList?.let {
             for(index in 0..it.size)
                 if(itemId == it[index]._id)
@@ -98,7 +98,7 @@ class DeviceRecyclerViewAdapter(private var presenter: ContractMain.Presenter) :
                 itemView.nodeToggle.isChecked = !itemView.nodeToggle.isChecked
 
                 //Inform the activity to pass on request to the controller to fetch updated data on the switch
-                presenter.onSwitchExecuted(itemView.nodeToggle.isChecked, intPosition, nodeList?.get(intPosition)?._id)
+                presenter.onSwitchExecuted(itemView.nodeToggle.isChecked, nodeList?.get(intPosition)?._id)
             }
         }
     }

@@ -16,6 +16,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class PresenterMain(private var view: ContractMain.View): ContractMain.Presenter, Callback<ModelDevice> {
+
     init {
         //Associate this presenter with the view
         view.presenter = this@PresenterMain
@@ -74,7 +75,7 @@ class PresenterMain(private var view: ContractMain.View): ContractMain.Presenter
         }
     }
 
-    override fun onSwitchExecuted(isChecked: Boolean, intPosition: Int, nodeId: Long?) {
+    override fun onSwitchExecuted(isChecked: Boolean, nodeId: String?) {
         nodeId?.let {
             val call: Call<ModelDevice>? = RFDeviceInteraction
                     .server(recyclerViewAdapter?.getAdapterItemById(it)?.deviceIp)
@@ -141,7 +142,7 @@ class PresenterMain(private var view: ContractMain.View): ContractMain.Presenter
 
                         call?.let {
                             //Figure out the ID of the modified device
-                            val deviceId = it.request().url().queryParameterValues("Id")[0].toLong()
+                            val deviceId = it.request().url().queryParameterValues("Id")[0]
 
                             //Update the isSwitchedOn value in the adapter
                             recyclerViewAdapter?.getAdapterItemById(deviceId)?.isDeviceSwitchedOn = responseBody.status

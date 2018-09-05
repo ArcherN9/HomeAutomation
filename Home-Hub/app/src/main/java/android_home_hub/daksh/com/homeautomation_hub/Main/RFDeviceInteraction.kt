@@ -35,7 +35,7 @@ object RFDeviceInteraction {
         fun flip(
                 //Queries are key=value pairs sent in the URL.
                 @Query("status") strAction: Boolean,
-                @Query("Id") strId: Long
+                @Query("Id") strId: String
         ): Call<ModelDevice>
     }
 }

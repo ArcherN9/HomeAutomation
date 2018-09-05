@@ -3,6 +3,6 @@
 
     <!-- Channels -->
     <string name="Home">Home</string>
-    <string name="Home.LivingRoom">Home/LivingRoom</string>
     <string name="Home_operations">Home/Operations</string>
+    <string name="home_devices_actions">Home/Devices/Actions</string>
 </resources>

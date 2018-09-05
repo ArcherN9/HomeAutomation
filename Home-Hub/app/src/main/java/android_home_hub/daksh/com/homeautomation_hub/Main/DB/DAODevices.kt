@@ -23,8 +23,8 @@ interface DAODevices {
 
     //Return devices by name
     @Query("Select _id from EntityDevices where deviceIp=:deviceIpAddress")
-    fun getDeviceByDeviceIp(deviceIpAddress: String): Long
+    fun getDeviceByDeviceIp(deviceIpAddress: String): String
 
     @Query("update EntityDevices set isDeviceSwitchedOn=:isDeviceSwitchedOn where _id=:id")
-    fun updateDevice(isDeviceSwitchedOn: Boolean, id: Long)
+    fun updateDevice(isDeviceSwitchedOn: Boolean, id: String)
 }

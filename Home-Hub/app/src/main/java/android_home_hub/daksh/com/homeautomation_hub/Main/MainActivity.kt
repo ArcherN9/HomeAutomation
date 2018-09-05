@@ -11,11 +11,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android_home_hub.daksh.com.homeautomation_hub.HomeApplication
-import android_home_hub.daksh.com.homeautomation_hub.Main.Model.ModelDevice
 import android_home_hub.daksh.com.homeautomation_hub.R
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.hcl.daksh.android_poc_camp.Dashboard.ContractMain
 import com.hcl.daksh.android_poc_camp.Dashboard.PresenterMain
+import com.hcl.daksh.android_poc_camp.Login.DB.EntityDevices
 import com.pubnub.api.callbacks.PNCallback
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
@@ -39,9 +40,16 @@ class MainActivity : AppCompatActivity(), ContractMain.View {
             HomeApplication.log("Received message on MainActivity mainHandler ${it.data}")
 
             //Transfer call to Presenter
+            val jsonParser = JsonParser()
+            val jsonElement = jsonParser.parse(it.data.getString(EXTRAS_ACTIONS_DEVICE))
             val gson = Gson()
-            val model = gson.fromJson(it.data.getString("Message"), ModelDevice::class.java)
-            presenter.onSwitchExecuted(model.status, model.position, model._id)
+            val device = gson.fromJson(
+                    jsonElement.asString
+                            .replace("\\","")
+                            .replace("\"",""),
+                    EntityDevices::class.java)
+            if(::presenter.isInitialized)
+                presenter.onSwitchExecuted(isChecked = device.isDeviceSwitchedOn, nodeId = device._id)
             return@Callback true
         })
 
@@ -61,19 +69,6 @@ class MainActivity : AppCompatActivity(), ContractMain.View {
         super.onResume()
         //Tell the presenter to load the list
         presenter.loadList()
-
-        //Send a dummmy message on pubnub
-        txEmptyMessage.setOnClickListener { _ ->
-            (application as HomeApplication).getPubNub()?.publish()
-                    ?.message(Arrays.asList("hello", "there"))
-                    ?.channel(resources.getString(R.string.Home))
-                    ?.async(object: PNCallback<PNPublishResult>() {
-                        override fun onResponse(result: PNPublishResult?, status: PNStatus?) {
-                            HomeApplication.log(status.toString())
-                            HomeApplication.log(result.toString())
-                        }
-                    })
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -126,5 +121,8 @@ class MainActivity : AppCompatActivity(), ContractMain.View {
 
         var mHandlerThread: HandlerThread? = null
         var mainHandler: Handler? = null
+
+        //MainActivity Extras
+        const val EXTRAS_ACTIONS_DEVICE: String = "EXTRAS_ACTIONS_DEVICE"
     }
 }

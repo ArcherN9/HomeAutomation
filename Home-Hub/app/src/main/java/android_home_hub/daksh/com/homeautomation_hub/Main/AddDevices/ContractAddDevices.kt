@@ -16,6 +16,6 @@ interface ContractAddDevices {
     interface Presenter : BasePresenter {
 
         //Register a new device in DB
-        fun registerDevice(ipAddress: String, deviceName: String, deviceLocation: String, deviceType: Int, isDeviceSwitchedOn: Boolean)
+        fun registerDevice(id: String, ipAddress: String, deviceName: String, deviceLocation: String, deviceType: Int, isDeviceSwitchedOn: Boolean)
     }
 }

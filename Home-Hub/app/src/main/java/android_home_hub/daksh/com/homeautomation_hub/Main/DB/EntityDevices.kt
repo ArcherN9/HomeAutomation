@@ -5,7 +5,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 @Entity
-class EntityDevices(@PrimaryKey(autoGenerate = true) var _id: Long?,
+class EntityDevices(@PrimaryKey() var _id: String,
                     @ColumnInfo() var deviceName: String,
                     @ColumnInfo() var deviceIp: String,
                     @ColumnInfo() var deviceLocation: String,

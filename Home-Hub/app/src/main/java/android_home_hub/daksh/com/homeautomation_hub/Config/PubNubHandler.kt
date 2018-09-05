@@ -12,13 +12,15 @@ import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
-import java.security.MessageDigest
 
-class PubNubHandler(application: HomeApplication): SubscribeCallback() {
+class PubNubHandler(var application: HomeApplication): SubscribeCallback() {
 
     init {
         //Subscribe to Home automation master channel
-        application.getPubNub()?.subscribe()?.channels(arrayListOf(application.getString(R.string.Home)))?.execute()
+        application.getPubNub()?.subscribe()?.channels(arrayListOf(
+                application.getString(R.string.Home),
+                application.getString(R.string.home_devices_actions)
+        ))?.execute()
     }
 
     override fun status(pubnub: PubNub?, status: PNStatus?) {
@@ -81,12 +83,35 @@ class PubNubHandler(application: HomeApplication): SubscribeCallback() {
      */
     override fun message(pubnub: PubNub?, message: PNMessageResult?) {
         HomeApplication.log("A new message has been received on ${message?.channel} channel sent by ${message?.publisher}.\n Message : ${message?.message}")
-        MainActivity.mainHandler?.let {
-            val handlerMessage: Message = it.obtainMessage()
-            val bundle = Bundle()
-            bundle.putString("Message", message?.message.toString())
-            handlerMessage.data = bundle
-            it.sendMessage(handlerMessage)
+
+        //Based on what channel the message was received on, figure out how to handle the message
+        message?.apply {
+
+            when(channel) {
+            // If the message received is from the actions channel. Ex Actions
+            // 1. A device was on state was toggled
+            // At this point, only switching something on & off is supported
+                application.getString(R.string.home_devices_actions) -> {
+                    //Check if the mainHandler on MainActivity is not null.
+                    //If it is not null, the activity is visible and a message needs to be sent to the activity
+                    //to update it
+                    MainActivity.mainHandler?.let {
+                        //Obtain the message of the Handler
+                        val handlerMessage: Message = it.obtainMessage()
+                        //Create a new bundle to pass on the data received
+                        val bundle = Bundle()
+                        bundle.putString(MainActivity.EXTRAS_ACTIONS_DEVICE, message.message.toString())
+                        //Store the bundle in the data field
+                        handlerMessage.data = bundle
+                        //Send message to the handler
+                        it.sendMessage(handlerMessage)
+                    }
+                }
+
+                else -> {
+                    //Do nothing
+                }
+            }
         }
     }
 

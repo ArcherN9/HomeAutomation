@@ -32,9 +32,9 @@ class PresenterAddDevice(private var view: ContractAddDevices.View): ContractAdd
     }
 
     //Registers a new device in the new DB
-    override fun registerDevice(ipAddress: String, deviceName: String, deviceLocation: String, deviceType: Int, isDeviceSwitchedOn: Boolean) {
+    override fun registerDevice(id: String, ipAddress: String, deviceName: String, deviceLocation: String, deviceType: Int, isDeviceSwitchedOn: Boolean) {
         if(!ipAddress.isEmpty() && !deviceName.isEmpty()) {
-            val entity = EntityDevices(deviceName = deviceName, deviceIp = ipAddress, deviceLocation = deviceLocation, deviceType = deviceType, isDeviceSwitchedOn = isDeviceSwitchedOn, _id = null)
+            val entity = EntityDevices(_id = id, deviceName = deviceName, deviceIp = ipAddress, deviceLocation = deviceLocation, deviceType = deviceType, isDeviceSwitchedOn = isDeviceSwitchedOn)
 
             //Create a new entry in the DB
             mHandler.post {
